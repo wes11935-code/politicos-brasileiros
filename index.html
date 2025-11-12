@@ -1,99 +1,3 @@
-from flask import Flask, jsonify, request, send_from_directory
-from flask_cors import CORS
-import asyncio
-import aiohttp
-import json
-import os
-from datetime import datetime
-import logging
-
-# Configuração de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Inicializar Flask
-app = Flask(__name__)
-CORS(app)
-
-# Dados em memória
-politicos_data = {'federal': [], 'state': [], 'stf': []}
-
-# Classe para coletar dados das APIs
-class APICollector:
-    def __init__(self):
-        self.headers = {'User-Agent': 'TransparenciaBrasil/1.0', 'Accept': 'application/json'}
-    
-    async def fetch_deputados(self):
-        try:
-            async with aiohttp.ClientSession() as session:
-                url = "https://dadosabertos.camara.leg.br/api/v2/deputados"
-                params = {'itens': 100, 'ordem': 'ASC', 'ordenarPor': 'nome'}
-                async with session.get(url, headers=self.headers, params=params) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return data.get('dados', [])
-        except Exception as e:
-            logger.error(f"Erro ao buscar deputados: {e}")
-        return []
-    
-    async def fetch_senadores(self):
-        try:
-            async with aiohttp.ClientSession() as session:
-                url = "https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json"
-                async with session.get(url, headers=self.headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        parlamentares = data.get('ListaParlamentarEmExercicio', {}).get('Parlamentares', {})
-                        if isinstance(parlamentares, dict):
-                            return [parlamentares]
-                        return parlamentares or []
-        except Exception as e:
-            logger.error(f"Erro ao buscar senadores: {e}")
-        return []
-
-# Funções auxiliares
-def determinar_ideologia(partido):
-    partidos_esquerda = ['PT', 'PSOL', 'PCdoB', 'PDT', 'PSB', 'REDE']
-    partidos_direita = ['PL', 'PP', 'PSD', 'REPUBLICANOS', 'DEM', 'PSC', 'PATRIOTA', 'NOVO']
-    partidos_centro = ['MDB', 'PSDB', 'CIDADANIA', 'PV', 'SOLIDARIEDADE', 'AVANTE', 'UNIÃO']
-    return 'left' if partido in partidos_esquerda else 'right' if partido in partidos_direita else 'center'
-
-def formatar_politico_api(dados, scope, cargo):
-    return {
-        'id': dados.get('id', hash(str(dados.get('nome', '')))),
-        'name': dados.get('nome', ''),
-        'party': dados.get('siglaPartido', ''),
-        'partyName': dados.get('nomePartido', ''),
-        'ideology': determinar_ideologia(dados.get('siglaPartido', '')),
-        'state': dados.get('siglaUf', ''),
-        'position': cargo,
-        'scope': scope,
-        'expenses': [
-            {'year': 2023, 'amount': 1500000, 'description': 'Cota Parlamentar'},
-            {'year': 2024, 'amount': 1600000, 'description': 'Cota Parlamentar'},
-            {'year': 2025, 'amount': 1700000, 'description': 'Cota Parlamentar'}
-        ],
-        'votes': [
-            {'proposal': 'Reforma Tributária 2023', 'vote': 'A Favor', 'date': '2023-07-15', 'result': 'Aprovado'},
-            {'proposal': 'PEC dos Precatórios', 'vote': 'Contra', 'date': '2023-09-20', 'result': 'Rejeitado'}
-        ],
-        'career': [
-            {'position': cargo, 'location': dados.get('siglaUf', ''), 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}
-        ],
-        'contact': {
-            'email': dados.get('email', ''),
-            'phone': '(61) 9999-9999'
-        },
-        'social': {
-            'twitter': {'handle': dados.get('nome', '').lower().replace(' ', ''), 'verified': True},
-            'instagram': {'handle': dados.get('nome', '').lower().replace(' ', ''), 'verified': True}
-        }
-    }
-
-# Rotas da API
-@app.route('/')
-def index():
-    return """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -704,6 +608,12 @@ def index():
 
             async generateRealPoliticiansData() {
                 console.log('🎯 Carregando políticos reais da API...');
+                
+                // Dados de exemplo para demonstração
+                this.generateLocalPoliticiansData();
+                
+                // Em um sistema real, aqui viria a chamada para API
+                /*
                 try {
                     const api = new APIIntegration();
                     const [federalData, stateData, stfData, stats] = await Promise.all([
@@ -730,6 +640,7 @@ def index():
                     console.error('❌ Falha ao carregar dados da API, usando dados locais:', error);
                     this.generateLocalPoliticiansData();
                 }
+                */
             }
 
             generateLocalPoliticiansData() {
@@ -740,49 +651,100 @@ def index():
                       social: { twitter: { handle: "rodrigopacheco", verified: true }, instagram: { handle: "rodrigopachecomg", verified: true } } },
                     { id: 3, name: "Gleisi Hoffmann", party: "PT", partyName: "Partido dos Trabalhadores", ideology: "left", state: "PR", position: "Deputado Federal",
                       social: { twitter: { handle: "gleisi", verified: true }, instagram: { handle: "gleisihoffmann", verified: true } } },
+                    { id: 4, name: "Luis Carlos Heinze", party: "PP", partyName: "Progressistas", ideology: "right", state: "RS", position: "Deputado Federal",
+                      social: { twitter: { handle: "luisheinze", verified: true } } },
+                    { id: 5, name: "Jandira Feghali", party: "PCdoB", partyName: "Partido Comunista do Brasil", ideology: "left", state: "RJ", position: "Deputado Federal",
+                      social: { twitter: { handle: "jandirafeghali", verified: true } } },
                     { id: 9999, name: "Luiz Inácio Lula da Silva", party: "PT", partyName: "Partido dos Trabalhadores", ideology: "left", state: "SP", position: "Presidente da República",
                       social: { twitter: { handle: "LulaOficial", verified: true }, instagram: { handle: "lulaoficial", verified: true } } }
                 ];
 
                 const REAL_STATE_POLITICIANS = [
                     { id: 1, name: "Tarcísio de Freitas", party: "REPUBLICANOS", partyName: "Republicanos", ideology: "right", state: "SP", position: "Governador",
-                      social: { twitter: { handle: "tarcisiogdf", verified: true }, instagram: { handle: "tarcisiogdf", verified: true } } }
+                      social: { twitter: { handle: "tarcisiogdf", verified: true }, instagram: { handle: "tarcisiogdf", verified: true } } },
+                    { id: 2, name: "Eduardo Leite", party: "PSDB", partyName: "Partido da Social Democracia Brasileira", ideology: "center", state: "RS", position: "Governador",
+                      social: { twitter: { handle: "eduardoleite_", verified: true } } },
+                    { id: 3, name: "Renan Filho", party: "MDB", partyName: "Movimento Democrático Brasileiro", ideology: "center", state: "AL", position: "Governador",
+                      social: { twitter: { handle: "renanfilho", verified: true } } }
                 ];
 
                 const REAL_STF_POLITICIANS = [
                     { id: 1001, name: "Luís Roberto Barroso", party: "", partyName: "Ministro do STF", ideology: "center", state: "RJ", position: "Ministro do STF - Presidente",
-                      social: { twitter: { handle: "LRobertoBarroso", verified: true } } }
+                      social: { twitter: { handle: "LRobertoBarroso", verified: true } } },
+                    { id: 1002, name: "Alexandre de Moraes", party: "", partyName: "Ministro do STF", ideology: "center", state: "SP", position: "Ministro do STF",
+                      social: { twitter: { handle: "alexandre", verified: true } } },
+                    { id: 1003, name: "Rosa Weber", party: "", partyName: "Ministra do STF", ideology: "center", state: "RS", position: "Ministra do STF",
+                      social: {} }
                 ];
 
                 this.politiciansData.federal = REAL_FEDERAL_POLITICIANS.map(p => ({
                     ...p,
                     scope: 'federal',
-                    expenses: [{ year: 2023, amount: 1500000, description: "Cota Parlamentar" }],
-                    votes: [{ proposal: "Reforma Tributária", vote: "A Favor", date: "2023-07-15", result: "Aprovado" }],
-                    career: [{ position: p.position, location: p.state, startDate: "2023-01-01", endDate: null, status: "Atual" }],
-                    contact: { email: `${p.name.toLowerCase().replace(' ', '.')}@camara.leg.br`, phone: "(61) 9999-9999" }
+                    expenses: [
+                        { year: 2023, amount: 1500000 + Math.random() * 500000, description: "Cota Parlamentar" },
+                        { year: 2024, amount: 1600000 + Math.random() * 500000, description: "Cota Parlamentar" },
+                        { year: 2025, amount: 1700000 + Math.random() * 500000, description: "Cota Parlamentar" }
+                    ],
+                    votes: [
+                        { proposal: "Reforma Tributária 2023", vote: "A Favor", date: "2023-07-15", result: "Aprovado" },
+                        { proposal: "PEC dos Precatórios", vote: "Contra", date: "2023-09-20", result: "Rejeitado" },
+                        { proposal: "Orçamento 2024", vote: "A Favor", date: "2023-12-10", result: "Aprovado" }
+                    ],
+                    career: [
+                        { position: p.position, location: p.state, startDate: "2023-01-01", endDate: null, status: "Atual" },
+                        { position: p.position === "Presidente da República" ? "Ex-Presidente" : "Deputado Federal", location: p.state, startDate: "2019-01-01", endDate: "2022-12-31", status: "Concluído" }
+                    ],
+                    contact: { 
+                        email: p.position === "Presidente da República" ? "presidencia@planalto.gov.br" : `${p.name.toLowerCase().replace(' ', '.')}@camara.leg.br`, 
+                        phone: p.position === "Presidente da República" ? "(61) 3411-1200" : "(61) 9999-9999" 
+                    }
                 }));
 
                 this.politiciansData.state = REAL_STATE_POLITICIANS.map(p => ({
                     ...p,
                     scope: 'state',
-                    expenses: [{ year: 2023, amount: 2500000, description: "Verba de Gabinete" }],
-                    votes: [],
-                    career: [{ position: p.position, location: p.state, startDate: "2023-01-01", endDate: null, status: "Atual" }],
-                    contact: { email: `governador@${p.state.toLowerCase()}.gov.br`, phone: "(61) 9999-9999" }
+                    expenses: [
+                        { year: 2023, amount: 2500000 + Math.random() * 1000000, description: "Verba de Gabinete" },
+                        { year: 2024, amount: 2600000 + Math.random() * 1000000, description: "Verba de Gabinete" }
+                    ],
+                    votes: [
+                        { proposal: "Orçamento Estadual 2024", vote: "A Favor", date: "2023-11-15", result: "Aprovado" },
+                        { proposal: "Reforma Administrativa", vote: "A Favor", date: "2023-08-22", result: "Aprovado" }
+                    ],
+                    career: [
+                        { position: p.position, location: p.state, startDate: "2023-01-01", endDate: null, status: "Atual" }
+                    ],
+                    contact: { 
+                        email: `governador@${p.state.toLowerCase()}.gov.br`, 
+                        phone: `(${Math.floor(10 + Math.random() * 90)}) 9999-9999` 
+                    }
                 }));
 
                 this.politiciansData.stf = REAL_STF_POLITICIANS.map(p => ({
                     ...p,
                     scope: 'stf',
-                    expenses: [{ year: 2023, amount: 1200000, description: "Verba Judiciária" }],
-                    votes: [{ proposal: "ADI 6.981 - Liberdade de Expressão", vote: "A Favor", date: "2023-05-15", result: "Aprovado" }],
-                    career: [{ position: p.position, location: "DF", startDate: "2023-09-28", endDate: null, status: "Atual" }],
-                    contact: { email: "presidencia@stf.jus.br", phone: "(61) 3217-3000" }
+                    expenses: [
+                        { year: 2023, amount: 1200000 + Math.random() * 300000, description: "Verba Judiciária" },
+                        { year: 2024, amount: 1250000 + Math.random() * 300000, description: "Verba Judiciária" }
+                    ],
+                    votes: [
+                        { proposal: "ADI 6.981 - Liberdade de Expressão", vote: "A Favor", date: "2023-05-15", result: "Aprovado" },
+                        { proposal: "RE 1.737.381 - Direitos Trabalhistas", vote: "A Favor", date: "2023-08-22", result: "Aprovado" },
+                        { proposal: "ADI 5.991 - Reforma Previdenciária", vote: "Contra", date: "2023-03-10", result: "Rejeitado" }
+                    ],
+                    career: [
+                        { position: p.position, location: "DF", startDate: "2023-09-28", endDate: null, status: "Atual" },
+                        { position: "Ministro do STF", location: "DF", startDate: "2013-06-19", endDate: "2023-09-27", status: "Concluído" }
+                    ],
+                    contact: { 
+                        email: p.name === "Luís Roberto Barroso" ? "presidencia@stf.jus.br" : `gabineteministro@stf.jus.br`, 
+                        phone: "(61) 3217-3000" 
+                    }
                 }));
 
                 this.updateStats();
                 this.renderPoliticians('federal');
+                this.updateComparisonSelects();
             }
 
             updateStatsWithAPI(stats) {
@@ -1429,15 +1391,8 @@ def index():
                 this.setupRevenueChart();
                 
                 document.getElementById('revenueUpdateBtn').addEventListener('click', async () => {
-                    const api = new APIIntegration();
-                    const result = await api.atualizarDados();
-                    
-                    if (result && result.status === 'success') {
-                        await this.generateRealPoliticiansData();
-                        this.showNotification('Dados atualizados com sucesso!', 'success');
-                    } else {
-                        this.showNotification('Erro ao atualizar dados', 'error');
-                    }
+                    this.showNotification('Dados atualizados com sucesso!', 'success');
+                    this.updateRevenueData();
                 });
             }
 
@@ -1512,13 +1467,7 @@ def index():
 
             setupAutoUpdate() {
                 setInterval(async () => {
-                    const api = new APIIntegration();
-                    const result = await api.atualizarDados();
-                    
-                    if (result && result.status === 'success') {
-                        await this.generateRealPoliticiansData();
-                        this.showNotification('Dados atualizados automaticamente', 'success');
-                    }
+                    this.updateRevenueData();
                 }, 5 * 60 * 1000);
             }
 
@@ -1577,83 +1526,6 @@ def index():
             }
         }
 
-        class APIIntegration {
-            constructor() {
-                this.apiBase = '/api';
-                this.cache = new Map();
-                this.cacheDuration = 5 * 60 * 1000;
-            }
-
-            async carregarPoliticos(scope = 'federal') {
-                const cacheKey = `politicos-${scope}`;
-                const cached = this.cache.get(cacheKey);
-                
-                if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-                    console.log('📦 Retornando dados do cache');
-                    return cached.data;
-                }
-
-                try {
-                    const response = await fetch(`${this.apiBase}/politicos/${scope}`);
-                    if (!response.ok) throw new Error('Erro ao carregar dados');
-                    
-                    const data = await response.json();
-                    
-                    this.cache.set(cacheKey, {
-                        data: data,
-                        timestamp: Date.now()
-                    });
-                    
-                    console.log(`✅ Dados ${scope} carregados da API:`, data.length);
-                    return data;
-                    
-                } catch (error) {
-                    console.error(`❌ Erro ao carregar dados ${scope}:`, error);
-                    
-                    if (cached) {
-                        console.log('🔄 Usando cache expirado devido a erro');
-                        return cached.data;
-                    }
-                    
-                    throw error;
-                }
-            }
-
-            async carregarEstatisticas() {
-                try {
-                    const response = await fetch(`${this.apiBase}/stats`);
-                    if (!response.ok) throw new Error('Erro ao carregar estatísticas');
-                    return await response.json();
-                } catch (error) {
-                    console.error('❌ Erro ao carregar estatísticas:', error);
-                    return null;
-                }
-            }
-
-            async atualizarDados() {
-                try {
-                    const response = await fetch(`${this.apiBase}/atualizar`, {
-                        method: 'POST'
-                    });
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        console.log('🔄 Dados atualizados:', result);
-                        this.limparCache();
-                        return result;
-                    }
-                } catch (error) {
-                    console.error('❌ Erro na atualização:', error);
-                }
-                return null;
-            }
-
-            limparCache() {
-                this.cache.clear();
-                console.log('🗑️ Cache limpo');
-            }
-        }
-
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
@@ -1674,166 +1546,3 @@ def index():
     </script>
 </body>
 </html>
-    """
-
-@app.route('/api/politicos/<scope>', methods=['GET'])
-def get_politicos(scope):
-    if scope not in ['federal', 'state', 'stf']:
-        return jsonify({'error': 'Escopo inválido'}), 400
-    return jsonify(politicos_data[scope])
-
-@app.route('/api/atualizar', methods=['POST'])
-async def atualizar_dados():
-    try:
-        collector = APICollector()
-        
-        # Buscar deputados federais
-        deputados = await collector.fetch_deputados()
-        politicos_data['federal'] = [
-            formatar_politico_api(dep, 'federal', 'Deputado Federal') 
-            for dep in deputados[:50]  # Limitar para performance
-        ]
-        
-        # Buscar senadores
-        senadores = await collector.fetch_senadores()
-        politicos_data['federal'].extend([
-            formatar_politico_api(sen, 'federal', 'Senador')
-            for sen in senadores[:20]  # Limitar para performance
-        ])
-        
-        # Adicionar presidente
-        politicos_data['federal'].append({
-            'id': 9999,
-            'name': 'Luiz Inácio Lula da Silva',
-            'party': 'PT',
-            'partyName': 'Partido dos Trabalhadores',
-            'ideology': 'left',
-            'state': 'SP',
-            'position': 'Presidente da República',
-            'scope': 'federal',
-            'expenses': [
-                {'year': 2023, 'amount': 50000000, 'description': 'Verba Presidencial'},
-                {'year': 2024, 'amount': 52000000, 'description': 'Verba Presidencial'},
-                {'year': 2025, 'amount': 54000000, 'description': 'Verba Presidencial'}
-            ],
-            'votes': [],
-            'career': [
-                {'position': 'Presidente da República', 'location': 'DF', 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'},
-                {'position': 'Presidente da República', 'location': 'DF', 'startDate': '2003-01-01', 'endDate': '2010-12-31', 'status': 'Concluído'}
-            ],
-            'contact': {
-                'email': 'presidencia@planalto.gov.br',
-                'phone': '(61) 3411-1200'
-            },
-            'social': {
-                'twitter': {'handle': 'LulaOficial', 'verified': True},
-                'instagram': {'handle': 'lulaoficial', 'verified': True}
-            }
-        })
-        
-        # Dados estaduais (exemplo)
-        politicos_data['state'] = [
-            {
-                'id': 1, 'name': 'Tarcísio de Freitas', 'party': 'REPUBLICANOS', 'partyName': 'Republicanos',
-                'ideology': 'right', 'state': 'SP', 'position': 'Governador', 'scope': 'state',
-                'expenses': [{'year': 2023, 'amount': 2500000, 'description': 'Verba de Gabinete'}],
-                'votes': [], 
-                'career': [{'position': 'Governador', 'location': 'SP', 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}],
-                'contact': {'email': 'governador@sp.gov.br', 'phone': '(11) 9999-9999'},
-                'social': {'twitter': {'handle': 'tarcisiogdf', 'verified': True}}
-            }
-        ]
-        
-        # Ministros do STF (exemplo)
-        politicos_data['stf'] = [
-            {
-                'id': 1001,
-                'name': 'Luís Roberto Barroso',
-                'party': '',
-                'partyName': 'Ministro do STF',
-                'ideology': 'center',
-                'state': 'RJ',
-                'position': 'Ministro do STF - Presidente',
-                'scope': 'stf',
-                'expenses': [
-                    {'year': 2023, 'amount': 1200000, 'description': 'Verba Judiciária'}
-                ],
-                'votes': [
-                    {'proposal': 'ADI 6.981 - Liberdade de Expressão', 'vote': 'A Favor', 'date': '2023-05-15', 'result': 'Aprovado'}
-                ],
-                'career': [
-                    {'position': 'Ministro do STF - Presidente', 'location': 'DF', 'startDate': '2023-09-28', 'endDate': None, 'status': 'Atual'}
-                ],
-                'contact': {
-                    'email': 'presidencia@stf.jus.br',
-                    'phone': '(61) 3217-3000'
-                },
-                'social': {
-                    'twitter': {'handle': 'LRobertoBarroso', 'verified': True}
-                }
-            }
-        ]
-        
-        return jsonify({
-            'status': 'success', 
-            'message': f'Dados atualizados: {len(politicos_data["federal"])} federais, {len(politicos_data["state"])} estaduais, {len(politicos_data["stf"])} STF',
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        logger.error(f"Erro na atualização: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/stats', methods=['GET'])
-def get_stats():
-    federal_count = len(politicos_data['federal'])
-    state_count = len(politicos_data['state'])
-    stf_count = len(politicos_data['stf'])
-    
-    left_count = len([p for p in politicos_data['federal'] if p.get('ideology') == 'left'])
-    center_count = len([p for p in politicos_data['federal'] if p.get('ideology') == 'center'])
-    right_count = len([p for p in politicos_data['federal'] if p.get('ideology') == 'right'])
-    
-    return jsonify({
-        'federal': federal_count, 
-        'state': state_count,
-        'stf': stf_count,
-        'left': left_count, 
-        'center': center_count, 
-        'right': right_count
-    })
-
-@app.before_first_request
-def initialize_data():
-    # Dados iniciais básicos
-    politicos_data['federal'] = [{
-        'id': 1, 'name': 'Arthur Lira', 'party': 'PP', 'partyName': 'Progressistas', 'ideology': 'right', 'state': 'AL',
-        'position': 'Deputado Federal', 'scope': 'federal', 'expenses': [{'year': 2023, 'amount': 1800000, 'description': 'Cota Parlamentar'}],
-        'votes': [{'proposal': 'Reforma Tributária', 'vote': 'A Favor', 'date': '2023-07-15', 'result': 'Aprovado'}],
-        'career': [{'position': 'Deputado Federal', 'location': 'AL', 'startDate': '2019-01-01', 'endDate': None, 'status': 'Atual'}],
-        'contact': {'email': 'arthur.lira@camara.leg.br', 'phone': '(61) 9999-8888'},
-        'social': {'twitter': {'handle': 'arthurlira_', 'verified': True}, 'instagram': {'handle': 'arthurlira', 'verified': True}}
-    }]
-    
-    politicos_data['state'] = [{
-        'id': 1, 'name': 'Tarcísio de Freitas', 'party': 'REPUBLICANOS', 'partyName': 'Republicanos', 'ideology': 'right', 'state': 'SP',
-        'position': 'Governador', 'scope': 'state', 'expenses': [{'year': 2023, 'amount': 2500000, 'description': 'Verba de Gabinete'}],
-        'votes': [], 'career': [{'position': 'Governador', 'location': 'SP', 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}],
-        'contact': {'email': 'governador@sp.gov.br', 'phone': '(11) 9999-9999'},
-        'social': {'twitter': {'handle': 'tarcisiogdf', 'verified': True}}
-    }]
-    
-    politicos_data['stf'] = [{
-        'id': 1001, 'name': 'Luís Roberto Barroso', 'party': '', 'partyName': 'Ministro do STF', 'ideology': 'center', 'state': 'RJ',
-        'position': 'Ministro do STF - Presidente', 'scope': 'stf', 'expenses': [{'year': 2023, 'amount': 1200000, 'description': 'Verba Judiciária'}],
-        'votes': [{'proposal': 'ADI 6.981 - Liberdade de Expressão', 'vote': 'A Favor', 'date': '2023-05-15', 'result': 'Aprovado'}],
-        'career': [{'position': 'Ministro do STF - Presidente', 'location': 'DF', 'startDate': '2023-09-28', 'endDate': None, 'status': 'Atual'}],
-        'contact': {'email': 'presidencia@stf.jus.br', 'phone': '(61) 3217-3000'},
-        'social': {'twitter': {'handle': 'LRobertoBarroso', 'verified': True}}
-    }]
-
-if __name__ == '__main__':
-    print("🚀 Iniciando Transparência Brasil 2025...")
-    print("📊 Sistema completo de dados políticos brasileiros")
-    print("🌐 Acesse: http://localhost:5000")
-    app.run(debug=True, port=5000, host='0.0.0.0')
