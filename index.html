@@ -29,7 +29,7 @@
             --primary-color: #2980b9;
             --secondary-color: #34495e;
             --background-color: #1a1d21;
-            --text-color: #e9ecef;
+            --text-color: #ffffff;
             --card-bg: #2d3748;
             --border-color: #4a5568;
             --shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -419,6 +419,7 @@
             background: var(--card-bg);
             border-radius: 8px;
             border-left: 4px solid var(--primary-color);
+            color: var(--text-color);
         }
 
         .vote-afavor { border-left-color: var(--success); }
@@ -472,6 +473,7 @@
             text-align: center;
             box-shadow: var(--shadow);
             transition: transform 0.3s;
+            color: var(--text-color);
         }
 
         .stat-card:hover {
@@ -509,6 +511,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
+            color: var(--text-color);
         }
 
         select, input {
@@ -572,6 +575,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
+            color: var(--text-color);
         }
 
         .view-btn.active {
@@ -645,7 +649,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
-            color: var(--secondary-color);
+            color: var(--text-color);
         }
 
         .politician-party {
@@ -673,6 +677,7 @@
         .politician-details {
             margin-bottom: 1rem;
             font-size: 0.9rem;
+            color: var(--text-color);
         }
 
         .politician-details p {
@@ -773,6 +778,7 @@
             cursor: pointer;
             min-width: 40px;
             transition: all 0.3s;
+            color: var(--text-color);
         }
 
         .pagination-btn.active {
@@ -870,6 +876,41 @@
             margin-left: 0.5rem;
         }
 
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-stats {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
         /* Otimizações para mobile */
         @media (max-width: 768px) {
             .container {
@@ -932,6 +973,10 @@
             .pagination {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1090,19 +1135,19 @@
         <!-- ESTATÍSTICAS -->
         <section class="stats-cards" aria-label="Estatísticas de políticos monitorados">
             <div class="stat-card">
-                <div class="stat-number" id="totalPoliticians">513</div>
+                <div class="stat-number" id="totalPoliticians">0</div>
                 <div>Deputados Federais</div>
             </div>
             <div class="stat-card stat-left">
-                <div class="stat-number" id="leftCount">185</div>
+                <div class="stat-number" id="leftCount">0</div>
                 <div>Esquerda</div>
             </div>
             <div class="stat-card stat-center">
-                <div class="stat-number" id="centerCount">168</div>
+                <div class="stat-number" id="centerCount">0</div>
                 <div>Centro</div>
             </div>
             <div class="stat-card stat-right">
-                <div class="stat-number" id="rightCount">160</div>
+                <div class="stat-number" id="rightCount">0</div>
                 <div>Direita</div>
             </div>
         </section>
@@ -1138,8 +1183,8 @@
 
         <!-- ABAS -->
         <div class="tabs" role="tablist">
-            <button class="tab active" role="tab" aria-selected="true" data-tab="federal">Federal (513)</button>
-            <button class="tab" role="tab" aria-selected="false" data-tab="state">Estadual (81)</button>
+            <button class="tab active" role="tab" aria-selected="true" data-tab="federal">Federal (0)</button>
+            <button class="tab" role="tab" aria-selected="false" data-tab="state">Estadual (0)</button>
             <button class="tab" role="tab" aria-selected="false" data-tab="comparison">Comparação 2025</button>
         </div>
 
@@ -1333,6 +1378,7 @@
                 this.setupTabs();
                 this.setupViewControls();
                 this.setupModal();
+                this.setupComparison();
                 console.log('✅ Sistema 2025 carregado com sucesso!');
             }
 
@@ -1358,91 +1404,20 @@
                 document.getElementById('searchFilter').value = this.filters.search;
             }
 
-            // ===== BASE DE DADOS DE POLÍTICOS COM FOTOS REAIS =====
+            // ===== BASE DE DADOS DE POLÍTICOS =====
             generatePoliticiansData() {
                 console.log('🎯 Gerando base de dados de políticos...');
                 
-                // Dados reais de políticos brasileiros (exemplos representativos)
-                const REAL_POLITICIANS = {
-                    federal: [
-                        {
-                            id: 1,
-                            name: "Arthur Lira",
-                            party: "PP",
-                            partyName: "Progressistas",
-                            ideology: "right",
-                            state: "AL",
-                            image: "https://www.camara.leg.br/internet/deputado/bandep/220593.jpg",
-                            position: "Deputado Federal",
-                            social: {
-                                twitter: { handle: "ArthurLira_", verified: true },
-                                facebook: { handle: "arthurliraoficial", verified: true },
-                                instagram: { handle: "arthurlira", verified: true },
-                                youtube: { handle: "arthurliraoficial", verified: false }
-                            }
-                        },
-                        {
-                            id: 2,
-                            name: "Rodrigo Pacheco",
-                            party: "PSD",
-                            partyName: "Partido Social Democrático",
-                            ideology: "center",
-                            state: "MG",
-                            image: "https://www.camara.leg.br/internet/deputado/bandep/204554.jpg",
-                            position: "Senador",
-                            social: {
-                                twitter: { handle: "rodrigopacheco", verified: true },
-                                facebook: { handle: "rodrigopachecosenador", verified: true },
-                                instagram: { handle: "rodrigopachecomg", verified: true },
-                                youtube: { handle: "rodrigopacheco", verified: false }
-                            }
-                        },
-                        {
-                            id: 3,
-                            name: "Gleisi Hoffmann",
-                            party: "PT",
-                            partyName: "Partido dos Trabalhadores",
-                            ideology: "left",
-                            state: "PR",
-                            image: "https://www.camara.leg.br/internet/deputado/bandep/178912.jpg",
-                            position: "Deputado Federal",
-                            social: {
-                                twitter: { handle: "gleisi", verified: true },
-                                facebook: { handle: "gleisi.hoffmann", verified: true },
-                                instagram: { handle: "gleisihoffmann", verified: true },
-                                youtube: { handle: "gleisihoffmann", verified: false }
-                            }
-                        }
-                    ],
-                    state: [
-                        {
-                            id: 1,
-                            name: "Tarcísio de Freitas",
-                            party: "REPUBLICANOS",
-                            partyName: "Republicanos",
-                            ideology: "right",
-                            state: "SP",
-                            image: "https://www.gov.br/republicanos/pt-br/assuntos/noticias/tarcisio-de-freitas/tarcisio-freitas.jpg",
-                            position: "Governador",
-                            social: {
-                                twitter: { handle: "tarcisiogdf", verified: true },
-                                facebook: { handle: "tarcisiogdf", verified: true },
-                                instagram: { handle: "tarcisiogdf", verified: true },
-                                youtube: { handle: "tarcisiogdf", verified: true }
-                            }
-                        }
-                    ]
-                };
-
-                // Gerar mais políticos baseados em dados reais
                 const BRAZILIAN_NAMES = {
                     firstNames: [
                         "Carlos", "João", "Pedro", "Paulo", "Luiz", "Marcos", "Fernando", "Ricardo", "Roberto", "José",
-                        "Maria", "Ana", "Francisca", "Juliana", "Patrícia", "Amanda", "Carla", "Luciana", "Sandra", "Tatiane"
+                        "Maria", "Ana", "Francisca", "Juliana", "Patrícia", "Amanda", "Carla", "Luciana", "Sandra", "Tatiane",
+                        "Antônio", "Francisco", "Manoel", "Sebastião", "Raimundo", "Miguel", "Eduardo", "Márcio", "Sérgio", "Rogério"
                     ],
                     lastNames: [
                         "Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Costa",
-                        "Gomes", "Ribeiro", "Martins", "Carvalho", "Almeida", "Nascimento", "Araújo", "Melo", "Barbosa", "Rocha"
+                        "Gomes", "Ribeiro", "Martins", "Carvalho", "Almeida", "Nascimento", "Araújo", "Melo", "Barbosa", "Rocha",
+                        "Moreira", "Correia", "Mendes", "Nunes", "Cavalcanti", "Dias", "Cunha", "Machado", "Monteiro", "Cardoso"
                     ]
                 };
 
@@ -1470,22 +1445,19 @@
                     "Marco Legal das Startups", "Lei do Gás", "Novo Marco do Ferrogrão"
                 ];
 
-                // Adicionar políticos reais
-                this.politiciansData.federal = [...REAL_POLITICIANS.federal];
-                this.politiciansData.state = [...REAL_POLITICIANS.state];
-
-                // Gerar mais políticos federais (total 513)
-                for (let i = this.politiciansData.federal.length + 1; i <= 100; i++) {
+                // Gerar políticos federais (513)
+                for (let i = 1; i <= 100; i++) {
                     this.politiciansData.federal.push(this.createPolitician(i, 'federal', BRAZILIAN_NAMES, BRAZILIAN_PARTIES, BRAZILIAN_STATES, PROPOSALS));
                 }
 
-                // Gerar mais políticos estaduais (total 81)
-                for (let i = this.politiciansData.state.length + 1; i <= 50; i++) {
+                // Gerar políticos estaduais (81)
+                for (let i = 1; i <= 50; i++) {
                     this.politiciansData.state.push(this.createPolitician(i, 'state', BRAZILIAN_NAMES, BRAZILIAN_PARTIES, BRAZILIAN_STATES, PROPOSALS));
                 }
 
                 this.updateStats();
                 this.renderPoliticians('federal');
+                this.updateComparisonSelects();
             }
 
             createPolitician(id, scope, names, parties, states, proposals) {
@@ -1523,10 +1495,6 @@
                     { position: scope === 'federal' ? 'Deputado Estadual' : 'Vereador', location: state, startDate: "2019-01-01", endDate: "2022-12-31", status: "Concluído" }
                 ];
 
-                // Imagem placeholder otimizada
-                const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
-                const imageSvg = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'><rect width='150' height='150' fill='%232c3e50'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='40' fill='white'>${initials}</text></svg>`;
-
                 // Redes sociais (alguns verificados)
                 const socialPlatforms = ['twitter', 'facebook', 'instagram', 'youtube'];
                 const social = {};
@@ -1548,7 +1516,6 @@
                     partyName: party.nome,
                     ideology: party.ideologia,
                     state: state,
-                    image: imageSvg,
                     position: position,
                     scope: scope,
                     expenses: expenses,
@@ -1644,8 +1611,12 @@
 
                 const socialLinksHTML = this.createSocialLinksHTML(politician.social, politician.name);
 
+                // Criar imagem SVG com as iniciais
+                const initials = politician.name.split(' ').map(n => n[0]).join('');
+                const imageSvg = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%232c3e50'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='60' fill='white'>${initials}</text></svg>`;
+
                 card.innerHTML = `
-                    <img class="politician-image" src="${politician.image}" alt="${politician.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\' viewBox=\\'0 0 300 200\\'><rect width=\\'300\\' height=\\'200\\' fill=\\'%232c3e50\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-family=\\'Arial\\' font-size=\\'24\\' fill=\\'white\\'>${politician.name.split(' ').map(n => n[0]).join('')}</text></svg>'">
+                    <img class="politician-image" src="${imageSvg}" alt="${politician.name}" loading="lazy">
                     <div class="politician-info">
                         <div class="politician-name">${politician.name}</div>
                         <div class="politician-party politician-${politician.ideology}">
@@ -1682,8 +1653,12 @@
 
                 const socialLinksHTML = this.createSocialLinksHTML(politician.social, politician.name);
 
+                // Criar imagem SVG com as iniciais
+                const initials = politician.name.split(' ').map(n => n[0]).join('');
+                const imageSvg = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><rect width='80' height='80' fill='%232c3e50'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='white'>${initials}</text></svg>`;
+
                 item.innerHTML = `
-                    <img class="list-image" src="${politician.image}" alt="${politician.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'80\\' height=\\'80\\' viewBox=\\'0 0 80 80\\'><rect width=\\'80\\' height=\\'80\\' fill=\\'%232c3e50\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-family=\\'Arial\\' font-size=\\'16\\' fill=\\'white\\'>${politician.name.split(' ').map(n => n[0]).join('')}</text></svg>'">
+                    <img class="list-image" src="${imageSvg}" alt="${politician.name}" loading="lazy">
                     <div class="list-info">
                         <div class="politician-name">${politician.name}</div>
                         <div class="politician-party politician-${politician.ideology}">
@@ -1778,6 +1753,164 @@
                 document.getElementById(`${scope}Content`).scrollIntoView({ behavior: 'smooth' });
             }
 
+            // ===== SISTEMA DE COMPARAÇÃO =====
+            setupComparison() {
+                const comparePolitician1 = document.getElementById('comparePolitician1');
+                const comparePolitician2 = document.getElementById('comparePolitician2');
+                const compareScope = document.getElementById('compareScope');
+
+                comparePolitician1.addEventListener('change', () => this.updateComparison());
+                comparePolitician2.addEventListener('change', () => this.updateComparison());
+                compareScope.addEventListener('change', () => {
+                    this.updateComparisonSelects();
+                    this.updateComparison();
+                });
+            }
+
+            updateComparisonSelects() {
+                const scope = document.getElementById('compareScope').value;
+                const politicians = this.politiciansData[scope];
+                const comparePolitician1 = document.getElementById('comparePolitician1');
+                const comparePolitician2 = document.getElementById('comparePolitician2');
+
+                // Limpar selects
+                comparePolitician1.innerHTML = '<option value="">Selecione um político</option>';
+                comparePolitician2.innerHTML = '<option value="">Selecione um político</option>';
+
+                // Popular com políticos
+                politicians.forEach(politician => {
+                    const option1 = document.createElement('option');
+                    option1.value = politician.id;
+                    option1.textContent = `${politician.name} (${politician.party}/${politician.state})`;
+                    comparePolitician1.appendChild(option1);
+
+                    const option2 = document.createElement('option');
+                    option2.value = politician.id;
+                    option2.textContent = `${politician.name} (${politician.party}/${politician.state})`;
+                    comparePolitician2.appendChild(option2);
+                });
+            }
+
+            updateComparison() {
+                const politician1Id = document.getElementById('comparePolitician1').value;
+                const politician2Id = document.getElementById('comparePolitician2').value;
+                const scope = document.getElementById('compareScope').value;
+                const resultsContainer = document.getElementById('comparisonResults');
+
+                if (!politician1Id || !politician2Id) {
+                    resultsContainer.innerHTML = `
+                        <div class="no-data">
+                            <i class="fas fa-balance-scale" aria-hidden="true"></i>
+                            <p>Selecione dois políticos para comparar</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const politician1 = this.politiciansData[scope].find(p => p.id == politician1Id);
+                const politician2 = this.politiciansData[scope].find(p => p.id == politician2Id);
+
+                if (!politician1 || !politician2) {
+                    resultsContainer.innerHTML = `
+                        <div class="no-data">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                            <p>Político não encontrado</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const totalExpenses1 = politician1.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                const totalExpenses2 = politician2.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                const votesCount1 = politician1.votes.length;
+                const votesCount2 = politician2.votes.length;
+                const votesInFavor1 = politician1.votes.filter(v => v.vote === 'A Favor').length;
+                const votesInFavor2 = politician2.votes.filter(v => v.vote === 'A Favor').length;
+
+                resultsContainer.innerHTML = `
+                    <div class="comparison-grid">
+                        <div class="comparison-card">
+                            <div class="comparison-header">
+                                <h3>${politician1.name}</h3>
+                                <div class="politician-party politician-${politician1.ideology}">
+                                    ${politician1.party} - ${politician1.state}
+                                </div>
+                            </div>
+                            <div class="comparison-stats">
+                                <div class="stat-row">
+                                    <span>Cargo:</span>
+                                    <span>${politician1.position}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Gastos Totais:</span>
+                                    <span>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalExpenses1)}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Total de Votações:</span>
+                                    <span>${votesCount1}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Votos a Favor:</span>
+                                    <span>${votesInFavor1} (${((votesInFavor1/votesCount1)*100).toFixed(1)}%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Ideologia:</span>
+                                    <span>${politician1.ideology === 'left' ? 'Esquerda' : politician1.ideology === 'center' ? 'Centro' : 'Direita'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-card">
+                            <div class="comparison-header">
+                                <h3>${politician2.name}</h3>
+                                <div class="politician-party politician-${politician2.ideology}">
+                                    ${politician2.party} - ${politician2.state}
+                                </div>
+                            </div>
+                            <div class="comparison-stats">
+                                <div class="stat-row">
+                                    <span>Cargo:</span>
+                                    <span>${politician2.position}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Gastos Totais:</span>
+                                    <span>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalExpenses2)}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Total de Votações:</span>
+                                    <span>${votesCount2}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Votos a Favor:</span>
+                                    <span>${votesInFavor2} (${((votesInFavor2/votesCount2)*100).toFixed(1)}%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Ideologia:</span>
+                                    <span>${politician2.ideology === 'left' ? 'Esquerda' : politician2.ideology === 'center' ? 'Centro' : 'Direita'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <button class="view-details" onclick="app.showDetailedComparison(${politician1.id}, ${politician2.id}, '${scope}')" style="width: auto; padding: 1rem 2rem;">
+                            <i class="fas fa-chart-bar"></i> Ver Comparação Detalhada
+                        </button>
+                    </div>
+                `;
+            }
+
+            showDetailedComparison(id1, id2, scope) {
+                const politician1 = this.politiciansData[scope].find(p => p.id == id1);
+                const politician2 = this.politiciansData[scope].find(p => p.id == id2);
+
+                if (!politician1 || !politician2) return;
+
+                // Abrir modais individuais para cada político
+                this.showPoliticianDetails(id1, scope);
+                // Poderia abrir um modal de comparação detalhada aqui
+            }
+
             // ===== MODAL DE DETALHES =====
             setupModal() {
                 const modal = document.getElementById('politicianModal');
@@ -1849,10 +1982,14 @@
 
                 const socialLinksHTML = this.createSocialLinksHTML(politician.social, politician.name);
 
+                // Criar imagem SVG com as iniciais
+                const initials = politician.name.split(' ').map(n => n[0]).join('');
+                const imageSvg = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><rect width='200' height='200' fill='%232c3e50'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='60' fill='white'>${initials}</text></svg>`;
+
                 return `
                     <div class="politician-detail-grid">
                         <div class="detail-sidebar">
-                            <img src="${politician.image}" alt="${politician.name}" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\' viewBox=\\'0 0 200 200\\'><rect width=\\'200\\' height=\\'200\\' fill=\\'%232c3e50\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-family=\\'Arial\\' font-size=\\'48\\' fill=\\'white\\'>${politician.name.split(' ').map(n => n[0]).join('')}</text></svg>'">
+                            <img src="${imageSvg}" alt="${politician.name}" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
                             <h3>${politician.name}</h3>
                             <div class="politician-party politician-${politician.ideology}">${politician.party}</div>
                             <p><strong>${politician.position}</strong></p>
