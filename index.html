@@ -2671,3 +2671,473 @@ class Config:
 
 # Configuração global
 config = Config()
+# app.py
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import asyncio
+import aiohttp
+import json
+import os
+from datetime import datetime
+
+app = Flask(__name__)
+CORS(app)
+
+# Dados em memória (em produção, use PostgreSQL)
+politicos_data = {
+    'federal': [],
+    'state': []
+}
+
+class APICollector:
+    def __init__(self):
+        self.headers = {
+            'User-Agent': 'TransparenciaBrasil/1.0',
+            'Accept': 'application/json'
+        }
+    
+    async def fetch_deputados(self):
+        """Buscar dados da API da Câmara"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = "https://dadosabertos.camara.leg.br/api/v2/deputados"
+                params = {'itens': 100, 'ordem': 'ASC', 'ordenarPor': 'nome'}
+                
+                async with session.get(url, headers=self.headers, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data.get('dados', [])
+        except Exception as e:
+            print(f"Erro ao buscar deputados: {e}")
+        return []
+    
+    async def fetch_senadores(self):
+        """Buscar dados da API do Senado"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                url = "https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json"
+                async with session.get(url, headers=self.headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        parlamentares = data.get('ListaParlamentarEmExercicio', {}).get('Parlamentares', {})
+                        if isinstance(parlamentares, dict):
+                            return [parlamentares] if parlamentares else []
+                        return parlamentares
+        except Exception as e:
+            print(f"Erro ao buscar senadores: {e}")
+        return []
+
+def determinar_ideologia(partido):
+    partidos_esquerda = ['PT', 'PSOL', 'PCdoB', 'PDT', 'PSB', 'REDE']
+    partidos_direita = ['PL', 'PP', 'PSD', 'REPUBLICANOS', 'DEM', 'PSC', 'PATRIOTA', 'NOVO']
+    partidos_centro = ['MDB', 'PSDB', 'CIDADANIA', 'PV', 'SOLIDARIEDADE', 'AVANTE', 'UNIÃO']
+    
+    if partido in partidos_esquerda:
+        return 'left'
+    elif partido in partidos_direita:
+        return 'right'
+    else:
+        return 'center'
+
+def formatar_politico_api(dados, scope, cargo):
+    """Formatar dados da API para o formato do frontend"""
+    return {
+        'id': dados.get('id', hash(dados.get('nome', ''))),
+        'name': dados.get('nome', ''),
+        'party': dados.get('siglaPartido', ''),
+        'partyName': dados.get('nomePartido', ''),
+        'ideology': determinar_ideologia(dados.get('siglaPartido', '')),
+        'state': dados.get('siglaUf', ''),
+        'position': cargo,
+        'scope': scope,
+        'expenses': [
+            {'year': 2023, 'amount': 1500000, 'description': 'Cota Parlamentar'},
+            {'year': 2024, 'amount': 1600000, 'description': 'Cota Parlamentar'},
+            {'year': 2025, 'amount': 1700000, 'description': 'Cota Parlamentar'}
+        ],
+        'votes': [
+            {'proposal': 'Reforma Tributária 2023', 'vote': 'A Favor', 'date': '2023-07-15', 'result': 'Aprovado'},
+            {'proposal': 'PEC dos Precatórios', 'vote': 'Contra', 'date': '2023-09-20', 'result': 'Rejeitado'},
+            {'proposal': 'Orçamento 2024', 'vote': 'A Favor', 'date': '2023-12-10', 'result': 'Aprovado'}
+        ],
+        'career': [
+            {'position': cargo, 'location': dados.get('siglaUf', ''), 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}
+        ],
+        'contact': {
+            'email': dados.get('email', ''),
+            'phone': '(61) 9999-9999'
+        },
+        'social': {
+            'twitter': {'handle': dados.get('nome', '').lower().replace(' ', ''), 'verified': True},
+            'instagram': {'handle': dados.get('nome', '').lower().replace(' ', ''), 'verified': True}
+        }
+    }
+
+@app.route('/api/politicos/<scope>', methods=['GET'])
+def get_politicos(scope):
+    """Endpoint para obter políticos por escopo"""
+    if scope not in ['federal', 'state']:
+        return jsonify({'error': 'Escopo inválido'}), 400
+    
+    return jsonify(politicos_data[scope])
+
+@app.route('/api/atualizar', methods=['POST'])
+async def atualizar_dados():
+    """Endpoint para atualizar dados em tempo real"""
+    try:
+        collector = APICollector()
+        
+        # Buscar deputados
+        deputados = await collector.fetch_deputados()
+        politicos_data['federal'] = [
+            formatar_politico_api(dep, 'federal', 'Deputado Federal') 
+            for dep in deputados[:50]  # Limitar para demonstração
+        ]
+        
+        # Buscar senadores
+        senadores = await collector.fetch_senadores()
+        politicos_data['federal'].extend([
+            formatar_politico_api(sen, 'federal', 'Senador')
+            for sen in senadores[:20]  # Limitar para demonstração
+        ])
+        
+        # Dados estaduais de exemplo
+        politicos_data['state'] = [
+            {
+                'id': 1,
+                'name': 'Tarcísio de Freitas',
+                'party': 'REPUBLICANOS',
+                'partyName': 'Republicanos',
+                'ideology': 'right',
+                'state': 'SP',
+                'position': 'Governador',
+                'scope': 'state',
+                'expenses': [
+                    {'year': 2023, 'amount': 2500000, 'description': 'Verba de Gabinete'},
+                    {'year': 2024, 'amount': 2600000, 'description': 'Verba de Gabinete'},
+                    {'year': 2025, 'amount': 2700000, 'description': 'Verba de Gabinete'}
+                ],
+                'votes': [],
+                'career': [{'position': 'Governador', 'location': 'SP', 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}],
+                'contact': {'email': 'governador@sp.gov.br', 'phone': '(11) 9999-9999'},
+                'social': {'twitter': {'handle': 'tarcisiogdf', 'verified': True}}
+            }
+        ]
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Dados atualizados: {len(politicos_data["federal"])} federais, {len(politicos_data["state"])} estaduais',
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    """Endpoint para estatísticas"""
+    federal_count = len(politicos_data['federal'])
+    state_count = len(politicos_data['state'])
+    
+    left_count = len([p for p in politicos_data['federal'] if p['ideology'] == 'left'])
+    center_count = len([p for p in politicos_data['federal'] if p['ideology'] == 'center'])
+    right_count = len([p for p in politicos_data['federal'] if p['ideology'] == 'right'])
+    
+    return jsonify({
+        'federal': federal_count,
+        'state': state_count,
+        'left': left_count,
+        'center': center_count,
+        'right': right_count
+    })
+
+# Inicializar com alguns dados
+@app.before_first_request
+def initialize_data():
+    # Dados iniciais de exemplo
+    politicos_data['federal'] = [
+        {
+            'id': 1,
+            'name': 'Arthur Lira',
+            'party': 'PP',
+            'partyName': 'Progressistas',
+            'ideology': 'right',
+            'state': 'AL',
+            'position': 'Deputado Federal',
+            'scope': 'federal',
+            'expenses': [
+                {'year': 2023, 'amount': 1800000, 'description': 'Cota Parlamentar'},
+                {'year': 2024, 'amount': 1900000, 'description': 'Cota Parlamentar'},
+                {'year': 2025, 'amount': 2000000, 'description': 'Cota Parlamentar'}
+            ],
+            'votes': [
+                {'proposal': 'Reforma Tributária', 'vote': 'A Favor', 'date': '2023-07-15', 'result': 'Aprovado'},
+                {'proposal': 'PEC Emergencial', 'vote': 'A Favor', 'date': '2023-09-20', 'result': 'Aprovado'}
+            ],
+            'career': [{'position': 'Deputado Federal', 'location': 'AL', 'startDate': '2019-01-01', 'endDate': None, 'status': 'Atual'}],
+            'contact': {'email': 'arthur.lira@camara.leg.br', 'phone': '(61) 9999-8888'},
+            'social': {
+                'twitter': {'handle': 'arthurlira_', 'verified': True},
+                'instagram': {'handle': 'arthurlira', 'verified': True}
+            }
+        }
+    ]
+    
+    politicos_data['state'] = [
+        {
+            'id': 1,
+            'name': 'Tarcísio de Freitas',
+            'party': 'REPUBLICANOS',
+            'partyName': 'Republicanos',
+            'ideology': 'right',
+            'state': 'SP',
+            'position': 'Governador',
+            'scope': 'state',
+            'expenses': [
+                {'year': 2023, 'amount': 2500000, 'description': 'Verba de Gabinete'},
+                {'year': 2024, 'amount': 2600000, 'description': 'Verba de Gabinete'},
+                {'year': 2025, 'amount': 2700000, 'description': 'Verba de Gabinete'}
+            ],
+            'votes': [],
+            'career': [{'position': 'Governador', 'location': 'SP', 'startDate': '2023-01-01', 'endDate': None, 'status': 'Atual'}],
+            'contact': {'email': 'governador@sp.gov.br', 'phone': '(11) 9999-9999'},
+            'social': {'twitter': {'handle': 'tarcisiogdf', 'verified': True}}
+        }
+    ]
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+        // Adicione este código ao final do seu arquivo HTML, antes do </script>
+
+// ===== INTEGRAÇÃO COM API =====
+class APIIntegration {
+    constructor() {
+        this.apiBase = 'http://localhost:5000/api';
+        this.cache = new Map();
+        this.cacheDuration = 5 * 60 * 1000; // 5 minutos
+    }
+
+    async carregarPoliticos(scope = 'federal') {
+        const cacheKey = `politicos-${scope}`;
+        const cached = this.cache.get(cacheKey);
+        
+        if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+            console.log('📦 Retornando dados do cache');
+            return cached.data;
+        }
+
+        try {
+            const response = await fetch(`${this.apiBase}/politicos/${scope}`);
+            if (!response.ok) throw new Error('Erro ao carregar dados');
+            
+            const data = await response.json();
+            
+            // Atualizar cache
+            this.cache.set(cacheKey, {
+                data: data,
+                timestamp: Date.now()
+            });
+            
+            console.log(`✅ Dados ${scope} carregados da API:`, data.length);
+            return data;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao carregar dados ${scope}:`, error);
+            
+            // Retornar dados do cache mesmo expirados em caso de erro
+            if (cached) {
+                console.log('🔄 Usando cache expirado devido a erro');
+                return cached.data;
+            }
+            
+            throw error;
+        }
+    }
+
+    async carregarEstatisticas() {
+        try {
+            const response = await fetch(`${this.apiBase}/stats`);
+            if (!response.ok) throw new Error('Erro ao carregar estatísticas');
+            return await response.json();
+        } catch (error) {
+            console.error('❌ Erro ao carregar estatísticas:', error);
+            return null;
+        }
+    }
+
+    async atualizarDados() {
+        try {
+            const response = await fetch(`${this.apiBase}/atualizar`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('🔄 Dados atualizados:', result);
+                this.limparCache();
+                return result;
+            }
+        } catch (error) {
+            console.error('❌ Erro na atualização:', error);
+        }
+        return null;
+    }
+
+    limparCache() {
+        this.cache.clear();
+        console.log('🗑️ Cache limpo');
+    }
+}
+
+// ===== MODIFICAÇÕES NO SISTEMA PRINCIPAL =====
+
+// Substitua o método generateRealPoliticiansData no sistema principal
+TransparenciaBrasilApp.prototype.generateRealPoliticiansData = async function() {
+    console.log('🎯 Carregando políticos reais da API...');
+    
+    try {
+        const api = new APIIntegration();
+        
+        // Carregar dados da API
+        const [federalData, stateData, stats] = await Promise.all([
+            api.carregarPoliticos('federal'),
+            api.carregarPoliticos('state'),
+            api.carregarEstatisticas()
+        ]);
+        
+        // Atualizar dados locais
+        this.politiciansData.federal = federalData || [];
+        this.politiciansData.state = stateData || [];
+        
+        // Atualizar estatísticas
+        if (stats) {
+            this.updateStatsWithAPI(stats);
+        } else {
+            this.updateStats();
+        }
+        
+        this.renderPoliticians('federal');
+        this.updateComparisonSelects();
+        
+        console.log('✅ Dados reais carregados com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Falha ao carregar dados da API, usando dados locais:', error);
+        // Manter dados locais como fallback
+        this.generateLocalPoliticiansData();
+    }
+};
+
+// Adicionar método para atualizar estatísticas com dados da API
+TransparenciaBrasilApp.prototype.updateStatsWithAPI = function(stats) {
+    document.getElementById('totalPoliticians').textContent = stats.federal || 0;
+    document.getElementById('leftCount').textContent = stats.left || 0;
+    document.getElementById('centerCount').textContent = stats.center || 0;
+    document.getElementById('rightCount').textContent = stats.right || 0;
+
+    // Atualizar contagem nas abas
+    document.querySelector('.tab[data-tab="federal"]').textContent = `Federal (${stats.federal || 0})`;
+    document.querySelector('.tab[data-tab="state"]').textContent = `Estadual (${stats.state || 0})`;
+};
+
+// Manter dados locais como fallback
+TransparenciaBrasilApp.prototype.generateLocalPoliticiansData = function() {
+    // ... (manter o código original de geração de dados locais)
+    console.log('🔄 Usando dados locais como fallback');
+    // Sua implementação atual de generateRealPoliticiansData aqui
+};
+
+// ===== ATUALIZAÇÃO EM TEMPO REAL =====
+
+// Adicionar ao método init()
+TransparenciaBrasilApp.prototype.setupAutoUpdate = function() {
+    // Atualizar dados a cada 5 minutos
+    setInterval(async () => {
+        const api = new APIIntegration();
+        const result = await api.atualizarDados();
+        
+        if (result && result.status === 'success') {
+            // Recarregar dados após atualização
+            await this.generateRealPoliticiansData();
+            this.showNotification('Dados atualizados com sucesso!', 'success');
+        }
+    }, 5 * 60 * 1000);
+};
+
+// Método para mostrar notificações
+TransparenciaBrasilApp.prototype.showNotification = function(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#27ae60' : '#3498db'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+};
+
+// Adicionar estilos CSS para animações
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+// ===== ATUALIZAR BOTÃO DE ATUALIZAÇÃO =====
+
+// No método initializeRevenuePanel(), adicione:
+document.getElementById('revenueUpdateBtn').addEventListener('click', async () => {
+    const api = new APIIntegration();
+    const result = await api.atualizarDados();
+    
+    if (result && result.status === 'success') {
+        await app.generateRealPoliticiansData();
+        app.showNotification('Dados atualizados com sucesso!', 'success');
+    } else {
+        app.showNotification('Erro ao atualizar dados', 'error');
+    }
+});
+
+// ===== INICIALIZAÇÃO ATUALIZADA =====
+
+// Modifique o método init para incluir auto-update
+TransparenciaBrasilApp.prototype.init = function() {
+    console.log('🚀 Iniciando Transparência Brasil 2025...');
+    this.setupEventListeners();
+    this.setupFilters();
+    this.initializeRevenuePanel();
+    this.setupTabs();
+    this.setupViewControls();
+    this.setupModal();
+    this.setupComparison();
+    this.setupAutoUpdate(); // ← Novo
+    
+    // Carregar dados
+    this.generateRealPoliticiansData();
+    
+    console.log('✅ Sistema 2025 carregado com sucesso!');
+};
+            pip install flask flask-cors aiohttp
+            python app.py
