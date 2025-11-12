@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* [Todo o CSS anterior permanece igual] */
-        /* Fontes otimizadas para carregamento rápido */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         :root {
             --primary-color: #3498db;
             --secondary-color: #2c3e50;
@@ -48,7 +44,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
@@ -60,9 +55,10 @@
             flex-direction: column;
             min-height: 100vh;
             font-weight: 400;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Header otimizado */
+        /* Header */
         header {
             background: linear-gradient(135deg, var(--secondary-color), #1a5276);
             color: white;
@@ -111,7 +107,7 @@
             flex: 1;
         }
 
-        /* Painel de Impostos Otimizado */
+        /* Painel de Impostos */
         .tax-revenue-panel {
             background: linear-gradient(135deg, #1a5276, #2c3e50);
             color: white;
@@ -338,7 +334,7 @@
             100% { opacity: 1; }
         }
 
-        /* Loading otimizado */
+        /* Loading */
         .loading {
             text-align: center;
             padding: 2rem;
@@ -354,43 +350,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        /* Otimizações para mobile */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0.75rem;
-            }
-            
-            .tax-revenue-panel {
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-            
-            .revenue-stats {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .revenue-value {
-                font-size: 1.6rem;
-            }
-            
-            .panel-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .country-badge {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 0.5rem;
-            }
-
-            .politicians-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         /* Conteúdo político */
@@ -477,6 +436,7 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
             white-space: nowrap;
+            transition: all 0.3s;
         }
 
         .tab.active {
@@ -512,6 +472,7 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             cursor: pointer;
+            transition: all 0.3s;
         }
 
         .view-btn.active {
@@ -551,6 +512,11 @@
             box-shadow: var(--shadow);
             gap: 1rem;
             align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .politician-list-item:hover {
+            transform: translateX(5px);
         }
 
         .politician-image {
@@ -590,21 +556,19 @@
             font-size: 0.8rem;
             margin-bottom: 0.5rem;
             font-weight: 600;
+            color: white;
         }
 
         .politician-left {
             background-color: var(--accent-left);
-            color: white;
         }
 
         .politician-center {
             background-color: var(--accent-center);
-            color: white;
         }
 
         .politician-right {
             background-color: var(--accent-right);
-            color: white;
         }
 
         .politician-details {
@@ -671,6 +635,7 @@
             border-radius: 4px;
             cursor: pointer;
             min-width: 40px;
+            transition: all 0.3s;
         }
 
         .pagination-btn.active {
@@ -742,46 +707,133 @@
             color: #aaa;
             font-size: 0.9rem;
         }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Otimizações para mobile */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+            
+            .tax-revenue-panel {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .revenue-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .revenue-value {
+                font-size: 1.6rem;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .country-badge {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 0.5rem;
+            }
+
+            .politicians-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .politician-list-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .view-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="header-container">
             <div class="logo">
-                <i class="fas fa-landmark"></i>
+                <i class="fas fa-landmark" aria-hidden="true"></i>
                 Transparência Brasil 2025
             </div>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                <span aria-hidden="true">🌙</span>
+            </button>
         </div>
     </header>
 
     <div class="container">
         <!-- PAINEL DE IMPOSTOS -->
-        <div class="tax-revenue-panel">
+        <section class="tax-revenue-panel" aria-labelledby="revenue-panel-title">
             <div class="country-badge">
-                <i class="fas fa-flag"></i>
+                <i class="fas fa-flag" aria-hidden="true"></i>
                 BRASIL 2025
             </div>
             
             <div class="panel-header">
-                <div class="panel-title">
-                    <i class="fas fa-chart-line"></i>
+                <h2 class="panel-title" id="revenue-panel-title">
+                    <i class="fas fa-chart-line" aria-hidden="true"></i>
                     Situação Fiscal Nacional 2025
                     <span class="data-source-badge">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-database" aria-hidden="true"></i>
                         Fonte: Tesouro Nacional 2025
                     </span>
-                </div>
+                </h2>
                 <div class="panel-controls">
                     <div class="last-update" id="revenueLastUpdate">
                         Última atualização: Carregando...
                     </div>
                     <button class="update-btn" id="revenueUpdateBtn">
-                        <i class="fas fa-sync-alt"></i>
+                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
                         Atualizar Dados
                     </button>
                     <div class="auto-update-indicator active" id="revenueAutoUpdate">
-                        <i class="fas fa-circle"></i>
+                        <i class="fas fa-circle" aria-hidden="true"></i>
                         Auto-update Ativo
                     </div>
                 </div>
@@ -790,49 +842,49 @@
             <div class="revenue-stats">
                 <div class="revenue-card revenue">
                     <div class="revenue-label">
-                        <i class="fas fa-money-bill-wave"></i>
+                        <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
                         Arrecadação Federal 2025
                     </div>
                     <div class="revenue-value" id="totalRevenue">
                         R$ 298,4 Bi
                     </div>
                     <div class="revenue-change change-positive" id="revenueChange">
-                        <i class="fas fa-arrow-up"></i>
+                        <i class="fas fa-arrow-up" aria-hidden="true"></i>
                         +4.7% vs 2024
                     </div>
                 </div>
 
                 <div class="revenue-card spending">
                     <div class="revenue-label">
-                        <i class="fas fa-hand-holding-usd"></i>
+                        <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
                         Gastos Públicos 2025
                     </div>
                     <div class="revenue-value" id="totalSpending">
                         R$ 312,8 Bi
                     </div>
                     <div class="revenue-change change-negative" id="spendingChange">
-                        <i class="fas fa-arrow-up"></i>
+                        <i class="fas fa-arrow-up" aria-hidden="true"></i>
                         +5.2% vs 2024
                     </div>
                 </div>
 
                 <div class="revenue-card balance">
                     <div class="revenue-label">
-                        <i class="fas fa-scale-balanced"></i>
+                        <i class="fas fa-scale-balanced" aria-hidden="true"></i>
                         Resultado Fiscal 2025
                     </div>
                     <div class="revenue-value" id="fiscalBalance">
                         R$ -14,4 Bi
                     </div>
                     <div class="revenue-change change-negative" id="balanceChange">
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-minus" aria-hidden="true"></i>
                         Déficit Fiscal
                     </div>
                 </div>
             </div>
 
             <div class="revenue-chart-container">
-                <canvas id="revenueChart"></canvas>
+                <canvas id="revenueChart" aria-label="Gráfico de arrecadação e gastos públicos 2025" role="img"></canvas>
             </div>
 
             <div class="revenue-details">
@@ -861,19 +913,19 @@
                     <span class="detail-value" id="securitySpending">R$ 40,7 Bi</span>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- INFORMAÇÃO DO SISTEMA -->
-        <div class="data-source-info">
-            <h3><i class="fas fa-database"></i> Dados Oficiais 2025 - Sistema Otimizado</h3>
+        <section class="data-source-info" aria-labelledby="system-info-title">
+            <h3 id="system-info-title"><i class="fas fa-database" aria-hidden="true"></i> Dados Oficiais 2025 - Sistema Otimizado</h3>
             <p>Dados fiscais atualizados em tempo real do Governo Federal - Exercício 2025</p>
             <div class="last-update" id="lastUpdate">
                 🚀 Carregamento rápido ativado - Dados 2025
             </div>
-        </div>
+        </section>
 
         <!-- ESTATÍSTICAS -->
-        <div class="stats-cards">
+        <section class="stats-cards" aria-label="Estatísticas de políticos monitorados">
             <div class="stat-card">
                 <div class="stat-number" id="totalPoliticians">621</div>
                 <div>Políticos Monitorados</div>
@@ -890,10 +942,10 @@
                 <div class="stat-number" id="rightCount">220</div>
                 <div>Direita</div>
             </div>
-        </div>
+        </section>
 
         <!-- FILTROS -->
-        <div class="filters">
+        <section class="filters" aria-label="Filtros de busca">
             <div class="filter-group">
                 <label for="ideologyFilter">Filtrar por Ideologia</label>
                 <select id="ideologyFilter">
@@ -919,21 +971,21 @@
                 <label for="searchFilter">Buscar político</label>
                 <input type="text" id="searchFilter" placeholder="Digite o nome do político">
             </div>
-        </div>
+        </section>
 
         <!-- ABAS -->
-        <div class="tabs">
-            <div class="tab active" data-tab="federal">Federal (513)</div>
-            <div class="tab" data-tab="state">Estadual (108)</div>
-            <div class="tab" data-tab="comparison">Comparação 2025</div>
+        <div class="tabs" role="tablist">
+            <button class="tab active" role="tab" aria-selected="true" data-tab="federal">Federal (513)</button>
+            <button class="tab" role="tab" aria-selected="false" data-tab="state">Estadual (108)</button>
+            <button class="tab" role="tab" aria-selected="false" data-tab="comparison">Comparação 2025</button>
         </div>
 
         <!-- CONTEÚDO FEDERAL -->
-        <div class="tab-content active" id="federalContent">
+        <section class="tab-content active" id="federalContent" role="tabpanel" aria-labelledby="federal-tab">
             <div class="view-controls">
                 <div class="view-toggle">
-                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i> Grade</button>
-                    <button class="view-btn" data-view="list"><i class="fas fa-list"></i> Lista</button>
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th" aria-hidden="true"></i> Grade</button>
+                    <button class="view-btn" data-view="list"><i class="fas fa-list" aria-hidden="true"></i> Lista</button>
                 </div>
                 <div>
                     <label for="sortFilter">Ordenar por: </label>
@@ -946,25 +998,28 @@
                 </div>
             </div>
             
-            <div class="politicians-grid" id="federalPoliticians">
-                <!-- Políticos serão carregados via JavaScript -->
+            <div class="politicians-grid" id="federalPoliticians" aria-live="polite">
+                <div class="loading">
+                    <i class="fas fa-spinner" aria-hidden="true"></i>
+                    <p>Carregando políticos federais...</p>
+                </div>
             </div>
             
-            <div class="politicians-list" id="federalPoliticiansList" style="display: none;">
+            <div class="politicians-list" id="federalPoliticiansList" style="display: none;" aria-live="polite">
                 <!-- Lista será carregada via JavaScript -->
             </div>
 
             <div class="pagination" id="federalPagination">
                 <!-- Paginação será gerada via JavaScript -->
             </div>
-        </div>
+        </section>
 
         <!-- CONTEÚDO ESTADUAL -->
-        <div class="tab-content" id="stateContent">
+        <section class="tab-content" id="stateContent" role="tabpanel" aria-labelledby="state-tab" hidden>
             <div class="view-controls">
                 <div class="view-toggle">
-                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i> Grade</button>
-                    <button class="view-btn" data-view="list"><i class="fas fa-list"></i> Lista</button>
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th" aria-hidden="true"></i> Grade</button>
+                    <button class="view-btn" data-view="list"><i class="fas fa-list" aria-hidden="true"></i> Lista</button>
                 </div>
                 <div>
                     <label for="sortFilterState">Ordenar por: </label>
@@ -977,21 +1032,24 @@
                 </div>
             </div>
             
-            <div class="politicians-grid" id="statePoliticians">
-                <!-- Políticos estaduais serão carregados via JavaScript -->
+            <div class="politicians-grid" id="statePoliticians" aria-live="polite">
+                <div class="loading">
+                    <i class="fas fa-spinner" aria-hidden="true"></i>
+                    <p>Carregando políticos estaduais...</p>
+                </div>
             </div>
             
-            <div class="politicians-list" id="statePoliticiansList" style="display: none;">
+            <div class="politicians-list" id="statePoliticiansList" style="display: none;" aria-live="polite">
                 <!-- Lista será carregada via JavaScript -->
             </div>
 
             <div class="pagination" id="statePagination">
                 <!-- Paginação será gerada via JavaScript -->
             </div>
-        </div>
+        </section>
 
         <!-- COMPARAÇÃO -->
-        <div class="tab-content" id="comparisonContent">
+        <section class="tab-content" id="comparisonContent" role="tabpanel" aria-labelledby="comparison-tab" hidden>
             <div class="filters">
                 <div class="filter-group">
                     <label for="comparePolitician1">Político 1</label>
@@ -1013,44 +1071,44 @@
                     </select>
                 </div>
             </div>
-            <div id="comparisonResults">
+            <div id="comparisonResults" aria-live="polite">
                 <div class="no-data">
-                    <i class="fas fa-balance-scale"></i>
+                    <i class="fas fa-balance-scale" aria-hidden="true"></i>
                     <p>Selecione dois políticos para comparar</p>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 
     <footer>
         <div class="footer-container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><i class="fas fa-database"></i> Fontes Oficiais 2025</h3>
+                    <h3><i class="fas fa-database" aria-hidden="true"></i> Fontes Oficiais 2025</h3>
                     <ul>
                         <li>
                             <span class="source-badge">2025</span>
                             <strong>Tesouro Nacional 2025</strong>
                             <br>
-                            <a href="https://www.tesourotransparente.gov.br" target="_blank">tesourotransparente.gov.br</a>
+                            <a href="https://www.tesourotransparente.gov.br" target="_blank" rel="noopener noreferrer">tesourotransparente.gov.br</a>
                         </li>
                         <li>
                             <span class="source-badge">2025</span>
                             <strong>Receita Federal 2025</strong>
                             <br>
-                            <a href="https://www.gov.br/receitafederal" target="_blank">gov.br/receitafederal</a>
+                            <a href="https://www.gov.br/receitafederal" target="_blank" rel="noopener noreferrer">gov.br/receitafederal</a>
                         </li>
                         <li>
                             <span class="source-badge">2025</span>
                             <strong>Portal da Transparência 2025</strong>
                             <br>
-                            <a href="https://portaldatransparencia.gov.br" target="_blank">portaldatransparencia.gov.br</a>
+                            <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener noreferrer">portaldatransparencia.gov.br</a>
                         </li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
-                    <h3><i class="fas fa-bolt"></i> Otimizações 2025</h3>
+                    <h3><i class="fas fa-bolt" aria-hidden="true"></i> Otimizações 2025</h3>
                     <p>✅ <strong>Carregamento 3x mais rápido</strong></p>
                     <p>✅ <strong>621 políticos cadastrados</strong></p>
                     <p>✅ <strong>Dados em tempo real</strong></p>
@@ -1058,7 +1116,7 @@
                 </div>
 
                 <div class="footer-section">
-                    <h3><i class="fas fa-shield-alt"></i> Transparência 2025</h3>
+                    <h3><i class="fas fa-shield-alt" aria-hidden="true"></i> Transparência 2025</h3>
                     <ul>
                         <li>✅ Dados oficiais 2025</li>
                         <li>✅ Atualização automática</li>
@@ -1079,11 +1137,13 @@
 
     <script>
         // ===== SISTEMA DE CACHE INTELIGENTE =====
-        const CacheManager = {
-            cache: new Map(),
-            maxSize: 100,
+        class CacheManager {
+            constructor() {
+                this.cache = new Map();
+                this.maxSize = 100;
+            }
             
-            set(key, value, ttl = 300000) { // 5 minutos padrão
+            set(key, value, ttl = 300000) {
                 if (this.cache.size >= this.maxSize) {
                     const firstKey = this.cache.keys().next().value;
                     this.cache.delete(firstKey);
@@ -1094,7 +1154,7 @@
                     timestamp: Date.now(),
                     ttl
                 });
-            },
+            }
             
             get(key) {
                 const item = this.cache.get(key);
@@ -1106,38 +1166,67 @@
                 }
                 
                 return item.value;
-            },
+            }
             
             clear() {
                 this.cache.clear();
             }
-        };
+        }
 
         // ===== SISTEMA DE LAZY LOADING =====
-        const LazyLoader = {
-            observer: null,
+        class LazyLoader {
+            constructor() {
+                this.observer = null;
+                this.init();
+            }
             
             init() {
-                this.observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.dataset.src;
-                            img.classList.remove('lazy');
-                            this.observer.unobserve(img);
-                        }
+                if ('IntersectionObserver' in window) {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const img = entry.target;
+                                this.loadImage(img);
+                                this.observer.unobserve(img);
+                            }
+                        });
+                    }, {
+                        rootMargin: '50px 0px',
+                        threshold: 0.1
                     });
-                });
-            },
+                }
+            }
+            
+            loadImage(img) {
+                const src = img.getAttribute('data-src');
+                if (src) {
+                    img.src = src;
+                    img.classList.remove('lazy');
+                    img.removeAttribute('data-src');
+                }
+            }
             
             observe(element) {
-                this.observer.observe(element);
+                if (this.observer) {
+                    this.observer.observe(element);
+                } else {
+                    // Fallback para browsers sem IntersectionObserver
+                    this.loadImage(element);
+                }
             }
-        };
+            
+            disconnect() {
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
+            }
+        }
 
         // ===== SISTEMA DE DEBOUNCING =====
-        const Debouncer = {
-            timeouts: new Map(),
+        class Debouncer {
+            constructor() {
+                this.timeouts = new Map();
+            }
             
             debounce(id, func, delay = 300) {
                 if (this.timeouts.has(id)) {
@@ -1149,758 +1238,637 @@
                     this.timeouts.delete(id);
                 }, delay));
             }
-        };
+            
+            cancel(id) {
+                if (this.timeouts.has(id)) {
+                    clearTimeout(this.timeouts.get(id));
+                    this.timeouts.delete(id);
+                }
+            }
+        }
 
-        // ===== WEB WORKER PARA PROCESSAMENTO PESADO =====
-        let DataProcessorWorker;
-        try {
-            const workerBlob = new Blob([`
-                self.onmessage = function(e) {
-                    const { type, data } = e.data;
-                    
-                    if (type === 'FILTER_POLITICIANS') {
-                        const { politicians, filters } = data;
-                        const filtered = politicians.filter(politician => {
-                            if (filters.ideology !== 'all' && politician.ideology !== filters.ideology) return false;
-                            if (filters.state !== 'all' && politician.state !== filters.state) return false;
-                            if (filters.party !== 'all' && politician.party !== filters.party) return false;
-                            if (filters.search && !politician.name.toLowerCase().includes(filters.search)) return false;
-                            return true;
-                        });
-                        
-                        self.postMessage({ type: 'FILTERED_DATA', data: filtered });
-                    }
-                    
-                    if (type === 'GENERATE_POLITICIANS') {
-                        const { count, scope } = data;
-                        const politicians = [];
-                        
-                        for (let i = 1; i <= count; i++) {
-                            politicians.push(generatePolitician(i, scope));
-                        }
-                        
-                        self.postMessage({ type: 'GENERATED_DATA', data: politicians });
-                    }
-                    
-                    function generatePolitician(id, scope) {
-                        const firstName = BRAZILIAN_NAMES.firstNames[Math.floor(Math.random() * BRAZILIAN_NAMES.firstNames.length)];
-                        const lastName = BRAZILIAN_NAMES.lastNames[Math.floor(Math.random() * BRAZILIAN_NAMES.lastNames.length)];
-                        const party = BRAZILIAN_PARTIES[Math.floor(Math.random() * BRAZILIAN_PARTIES.length)];
-                        const state = BRAZILIAN_STATES[Math.floor(Math.random() * BRAZILIAN_STATES.length)];
-                        
-                        const position = scope === 'federal' ? 
-                            (Math.random() > 0.2 ? 'Deputado Federal' : 'Senador') :
-                            (Math.random() > 0.3 ? 'Deputado Estadual' : 'Governador');
-                        
-                        const baseExpense = position === 'Senador' ? 1800000 : 
-                                           position === 'Governador' ? 2500000 : 
-                                           position === 'Deputado Federal' ? 1200000 : 800000;
-                        
-                        const expenses = Array.from({length: 3}, (_, i) => ({
-                            year: 2023 + i,
-                            amount: baseExpense * (0.8 + Math.random() * 0.4),
-                            description: "Cota Parlamentar"
-                        }));
-                        
-                        return {
-                            id: id,
-                            name: \`\${firstName} \${lastName}\`,
-                            party: party.sigla,
-                            partyName: party.nome,
-                            ideology: party.ideologia,
-                            state: state,
-                            image: \`https://via.placeholder.com/300x200/2c3e50/ffffff?text=\${firstName.charAt(0)}\${lastName.charAt(0)}\`,
-                            expenses: expenses,
-                            position: position,
-                            scope: scope
-                        };
-                    }
-                    
-                    const BRAZILIAN_NAMES = {
-                        firstNames: [
-                            "José", "Maria", "Antônio", "Francisco", "Carlos", "Paulo", "Pedro", "Lucas", "Luiz", "Marcos",
-                            "Ana", "Francisca", "Antônia", "Adriana", "Juliana", "Márcia", "Fernanda", "Patrícia", "Aline", "Camila",
-                            "João", "Miguel", "Arthur", "Davi", "Gabriel", "Bernardo", "Rafael", "Heitor", "Enzo", "Lorenzo",
-                            "Laura", "Alice", "Manuela", "Sophia", "Isabella", "Helena", "Valentina", "Giovanna", "Maria", "Eduarda",
-                            "Roberto", "Ricardo", "Daniel", "Bruno", "Eduardo", "Felipe", "André", "Thiago", "Marcelo", "Sérgio",
-                            "Cristina", "Vanessa", "Simone", "Tatiane", "Priscila", "Renata", "Letícia", "Bianca", "Jéssica", "Natália"
-                        ],
-                        lastNames: [
-                            "Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Costa",
-                            "Gomes", "Ribeiro", "Martins", "Carvalho", "Almeida", "Nascimento", "Araújo", "Melo", "Barbosa", "Rocha",
-                            "Moreira", "Correia", "Mendes", "Nunes", "Cavalcanti", "Dias", "Cunha", "Machado", "Monteiro", "Cardoso",
-                            "Ramos", "Teixeira", "Farias", "Freitas", "Brito", "Vieira", "Sampaio", "Moura", "Medeiros", "Dantas",
-                            "Bezerra", "Borges", "Tavares", "Caldeira", "Fontes", "Vasconcelos", "Xavier", "Lacerda", "Queiroz", "Peixoto"
-                        ]
-                    };
-                    
-                    const BRAZILIAN_PARTIES = [
-                        { sigla: "PT", nome: "Partido dos Trabalhadores", ideologia: "left" },
-                        { sigla: "PSOL", nome: "Partido Socialismo e Liberdade", ideologia: "left" },
-                        { sigla: "PCdoB", nome: "Partido Comunista do Brasil", ideologia: "left" },
-                        { sigla: "PDT", nome: "Partido Democrático Trabalhista", ideologia: "left" },
-                        { sigla: "PSB", nome: "Partido Socialista Brasileiro", ideologia: "left" },
-                        { sigla: "MDB", nome: "Movimento Democrático Brasileiro", ideologia: "center" },
-                        { sigla: "PSDB", nome: "Partido da Social Democracia Brasileira", ideologia: "center" },
-                        { sigla: "CIDADANIA", nome: "Cidadania", ideologia: "center" },
-                        { sigla: "PV", nome: "Partido Verde", ideologia: "center" },
-                        { sigla: "SOLIDARIEDADE", nome: "Solidariedade", ideologia: "center" },
-                        { sigla: "PL", nome: "Partido Liberal", ideologia: "right" },
-                        { sigla: "PSD", nome: "Partido Social Democrático", ideologia: "right" },
-                        { sigla: "REPUBLICANOS", nome: "Republicanos", ideologia: "right" },
-                        { sigla: "PP", nome: "Progressistas", ideologia: "right" },
-                        { sigla: "DEM", nome: "Democratas", ideologia: "right" }
-                    ];
-                    
-                    const BRAZILIAN_STATES = [
-                        "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
-                        "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
-                        "RS", "RO", "RR", "SC", "SP", "SE", "TO"
-                    ];
+        // ===== SISTEMA PRINCIPAL =====
+        class TransparenciaBrasilApp {
+            constructor() {
+                this.cacheManager = new CacheManager();
+                this.lazyLoader = new LazyLoader();
+                this.debouncer = new Debouncer();
+                this.politiciansData = {
+                    federal: [],
+                    state: []
                 };
-            `], { type: 'application/javascript' });
-            
-            DataProcessorWorker = new Worker(URL.createObjectURL(workerBlob));
-            
-            DataProcessorWorker.onmessage = function(e) {
-                const { type, data } = e.data;
+                this.currentTab = 'federal';
+                this.currentView = 'grid';
+                this.isGeneratingData = false;
                 
-                if (type === 'FILTERED_DATA') {
-                    const activeTab = document.querySelector('.tab.active').dataset.tab;
-                    renderPoliticiansView(activeTab, data);
-                }
-                
-                if (type === 'GENERATED_DATA') {
-                    const scope = data[0].scope;
-                    POLITICIANS_DATABASE[scope] = data;
-                    CacheManager.set(\`politicians_\${scope}\`, data, 600000); // 10 minutos
-                    renderPoliticians(scope);
-                }
-            };
-        } catch (e) {
-            console.warn('Web Workers não suportados, usando fallback');
-            DataProcessorWorker = null;
-        }
-
-        // ===== BASE DE DADOS DE POLÍTICOS =====
-        const POLITICIANS_DATABASE = {
-            federal: [],
-            state: []
-        };
-
-        // Partidos brasileiros reais
-        const BRAZILIAN_PARTIES = [
-            // Esquerda
-            { sigla: "PT", nome: "Partido dos Trabalhadores", ideologia: "left" },
-            { sigla: "PSOL", nome: "Partido Socialismo e Liberdade", ideologia: "left" },
-            { sigla: "PCdoB", nome: "Partido Comunista do Brasil", ideologia: "left" },
-            { sigla: "PDT", nome: "Partido Democrático Trabalhista", ideologia: "left" },
-            { sigla: "PSB", nome: "Partido Socialista Brasileiro", ideologia: "left" },
-            
-            // Centro
-            { sigla: "MDB", nome: "Movimento Democrático Brasileiro", ideologia: "center" },
-            { sigla: "PSDB", nome: "Partido da Social Democracia Brasileira", ideologia: "center" },
-            { sigla: "CIDADANIA", nome: "Cidadania", ideologia: "center" },
-            { sigla: "PV", nome: "Partido Verde", ideologia: "center" },
-            { sigla: "SOLIDARIEDADE", nome: "Solidariedade", ideologia: "center" },
-            { sigla: "AVANTE", nome: "Avante", ideologia: "center" },
-            { sigla: "PODE", nome: "Podemos", ideologia: "center" },
-            
-            // Direita
-            { sigla: "PL", nome: "Partido Liberal", ideologia: "right" },
-            { sigla: "PSD", nome: "Partido Social Democrático", ideologia: "right" },
-            { sigla: "REPUBLICANOS", nome: "Republicanos", ideologia: "right" },
-            { sigla: "PP", nome: "Progressistas", ideologia: "right" },
-            { sigla: "DEM", nome: "Democratas", ideologia: "right" },
-            { sigla: "PSC", nome: "Partido Social Cristão", ideologia: "right" },
-            { sigla: "PATRIOTA", nome: "Patriota", ideologia: "right" },
-            { sigla: "NOVO", nome: "Partido Novo", ideologia: "right" },
-            { sigla: "AGIR", nome: "Agir", ideologia: "right" }
-        ];
-
-        // Estados brasileiros
-        const BRAZILIAN_STATES = [
-            "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
-            "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
-            "RS", "RO", "RR", "SC", "SP", "SE", "TO"
-        ];
-
-        // Nomes brasileiros reais
-        const BRAZILIAN_NAMES = {
-            firstNames: [
-                "José", "Maria", "Antônio", "Francisco", "Carlos", "Paulo", "Pedro", "Lucas", "Luiz", "Marcos",
-                "Ana", "Francisca", "Antônia", "Adriana", "Juliana", "Márcia", "Fernanda", "Patrícia", "Aline", "Camila",
-                "João", "Miguel", "Arthur", "Davi", "Gabriel", "Bernardo", "Rafael", "Heitor", "Enzo", "Lorenzo",
-                "Laura", "Alice", "Manuela", "Sophia", "Isabella", "Helena", "Valentina", "Giovanna", "Maria", "Eduarda",
-                "Roberto", "Ricardo", "Daniel", "Bruno", "Eduardo", "Felipe", "André", "Thiago", "Marcelo", "Sérgio",
-                "Cristina", "Vanessa", "Simone", "Tatiane", "Priscila", "Renata", "Letícia", "Bianca", "Jéssica", "Natália"
-            ],
-            lastNames: [
-                "Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Costa",
-                "Gomes", "Ribeiro", "Martins", "Carvalho", "Almeida", "Nascimento", "Araújo", "Melo", "Barbosa", "Rocha",
-                "Moreira", "Correia", "Mendes", "Nunes", "Cavalcanti", "Dias", "Cunha", "Machado", "Monteiro", "Cardoso",
-                "Ramos", "Teixeira", "Farias", "Freitas", "Brito", "Vieira", "Sampaio", "Moura", "Medeiros", "Dantas",
-                "Bezerra", "Borges", "Tavares", "Caldeira", "Fontes", "Vasconcelos", "Xavier", "Lacerda", "Queiroz", "Peixoto"
-            ]
-        };
-
-        // ===== GERAÇÃO DE DADOS DE POLÍTICOS =====
-        function generatePoliticiansData() {
-            console.log('🎯 Gerando base de dados de políticos...');
-            
-            // Verificar cache primeiro
-            const cachedFederal = CacheManager.get('politicians_federal');
-            const cachedState = CacheManager.get('politicians_state');
-            
-            if (cachedFederal && cachedState) {
-                POLITICIANS_DATABASE.federal = cachedFederal;
-                POLITICIANS_DATABASE.state = cachedState;
-                console.log('✅ Dados carregados do cache');
-                updateStats();
-                renderPoliticians('federal');
-                return;
+                this.init();
             }
             
-            // Usar Web Worker se disponível
-            if (DataProcessorWorker) {
-                DataProcessorWorker.postMessage({
-                    type: 'GENERATE_POLITICIANS',
-                    data: { count: 513, scope: 'federal' }
-                });
+            init() {
+                console.log('🚀 Iniciando Transparência Brasil 2025...');
                 
-                DataProcessorWorker.postMessage({
-                    type: 'GENERATE_POLITICIANS',
-                    data: { count: 108, scope: 'state' }
-                });
-            } else {
-                // Fallback para geração síncrona
-                for (let i = 1; i <= 513; i++) {
-                    const politician = createPolitician(i, 'federal');
-                    POLITICIANS_DATABASE.federal.push(politician);
-                }
+                this.setupEventListeners();
+                this.setupFilters();
+                this.initializeRevenuePanel();
+                this.generatePoliticiansData();
+                this.setupTabs();
+                this.setupViewControls();
                 
-                for (let i = 1; i <= 108; i++) {
-                    const politician = createPolitician(i, 'state');
-                    POLITICIANS_DATABASE.state.push(politician);
-                }
-                
-                CacheManager.set('politicians_federal', POLITICIANS_DATABASE.federal);
-                CacheManager.set('politicians_state', POLITICIANS_DATABASE.state);
-                
-                console.log(`✅ Base gerada: ${POLITICIANS_DATABASE.federal.length} federais + ${POLITICIANS_DATABASE.state.length} estaduais`);
-                updateStats();
-                renderPoliticians('federal');
+                console.log('✅ Sistema 2025 carregado com sucesso!');
             }
-        }
-
-        function createPolitician(id, scope) {
-            const firstName = BRAZILIAN_NAMES.firstNames[Math.floor(Math.random() * BRAZILIAN_NAMES.firstNames.length)];
-            const lastName = BRAZILIAN_NAMES.lastNames[Math.floor(Math.random() * BRAZILIAN_NAMES.lastNames.length)];
-            const party = BRAZILIAN_PARTIES[Math.floor(Math.random() * BRAZILIAN_PARTIES.length)];
-            const state = BRAZILIAN_STATES[Math.floor(Math.random() * BRAZILIAN_STATES.length)];
             
-            const position = scope === 'federal' ? 
-                (Math.random() > 0.2 ? 'Deputado Federal' : 'Senador') :
-                (Math.random() > 0.3 ? 'Deputado Estadual' : 'Governador');
+            // ===== BASE DE DADOS DE POLÍTICOS =====
+            generatePoliticiansData() {
+                if (this.isGeneratingData) return;
+                
+                console.log('🎯 Gerando base de dados de políticos...');
+                this.isGeneratingData = true;
+                
+                // Verificar cache primeiro
+                const cachedFederal = this.cacheManager.get('politicians_federal');
+                const cachedState = this.cacheManager.get('politicians_state');
+                
+                if (cachedFederal && cachedState) {
+                    this.politiciansData.federal = cachedFederal;
+                    this.politiciansData.state = cachedState;
+                    console.log('✅ Dados carregados do cache');
+                    this.updateStats();
+                    this.renderPoliticians('federal');
+                    this.isGeneratingData = false;
+                    return;
+                }
+                
+                // Gerar dados em lotes para não bloquear a UI
+                this.generatePoliticiansBatch('federal', 513, 0, 50);
+                this.generatePoliticiansBatch('state', 108, 0, 25);
+            }
             
-            // Gastos realistas baseados no cargo
-            const baseExpense = position === 'Senador' ? 1800000 : 
-                               position === 'Governador' ? 2500000 : 
-                               position === 'Deputado Federal' ? 1200000 : 800000;
+            generatePoliticiansBatch(scope, total, start, batchSize) {
+                const end = Math.min(start + batchSize, total);
+                
+                for (let i = start + 1; i <= end; i++) {
+                    const politician = this.createPolitician(i, scope);
+                    this.politiciansData[scope].push(politician);
+                }
+                
+                if (end < total) {
+                    // Continuar em batches assíncronos
+                    setTimeout(() => {
+                        this.generatePoliticiansBatch(scope, total, end, batchSize);
+                    }, 0);
+                } else {
+                    // Finalizou esta scope
+                    this.cacheManager.set(`politicians_${scope}`, this.politiciansData[scope], 600000);
+                    console.log(`✅ ${scope} gerados: ${this.politiciansData[scope].length}`);
+                    
+                    if (scope === 'federal') {
+                        this.updateStats();
+                        this.renderPoliticians('federal');
+                    }
+                    
+                    // Verificar se ambos finalizaram
+                    if (this.politiciansData.federal.length === 513 && this.politiciansData.state.length === 108) {
+                        this.isGeneratingData = false;
+                    }
+                }
+            }
             
-            const expenses = Array.from({length: 3}, (_, i) => ({
-                year: 2023 + i,
-                amount: baseExpense * (0.8 + Math.random() * 0.4),
-                description: "Cota Parlamentar"
-            }));
-            
-            return {
-                id: id,
-                name: `${firstName} ${lastName}`,
-                party: party.sigla,
-                partyName: party.nome,
-                ideology: party.ideologia,
-                state: state,
-                image: `https://via.placeholder.com/300x200/2c3e50/ffffff?text=${firstName.charAt(0)}${lastName.charAt(0)}`,
-                social: {
-                    twitter: `${firstName.toLowerCase()}${lastName.toLowerCase()}`,
-                    facebook: `${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
-                    instagram: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`
-                },
-                expenses: expenses,
-                votes: generateVotes(),
-                career: generatePoliticalCareer(position, state),
-                position: position,
-                scope: scope
-            };
-        }
-
-        function generatePoliticalCareer(currentPosition, state) {
-            const career = [];
-            const currentYear = new Date().getFullYear();
-            
-            // Cargo atual
-            career.push({
-                position: currentPosition,
-                location: state,
-                startDate: `${currentYear - 2}-01-01`,
-                endDate: null,
-                status: 'Atual'
-            });
-            
-            // Cargos anteriores
-            const previousPositions = currentPosition === 'Deputado Federal' ? 
-                ['Deputado Estadual', 'Vereador'] :
-                currentPosition === 'Senador' ? 
-                ['Deputado Federal', 'Governador'] :
-                currentPosition === 'Governador' ? 
-                ['Deputado Federal', 'Prefeito'] :
-                ['Vereador', 'Secretário Municipal'];
-            
-            previousPositions.forEach((position, index) => {
-                const startYear = currentYear - 4 - index;
-                career.push({
+            createPolitician(id, scope) {
+                const BRAZILIAN_NAMES = {
+                    firstNames: [
+                        "José", "Maria", "Antônio", "Francisco", "Carlos", "Paulo", "Pedro", "Lucas", "Luiz", "Marcos",
+                        "Ana", "Francisca", "Antônia", "Adriana", "Juliana", "Márcia", "Fernanda", "Patrícia", "Aline", "Camila"
+                    ],
+                    lastNames: [
+                        "Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Costa"
+                    ]
+                };
+                
+                const BRAZILIAN_PARTIES = [
+                    { sigla: "PT", nome: "Partido dos Trabalhadores", ideologia: "left" },
+                    { sigla: "PSOL", nome: "Partido Socialismo e Liberdade", ideologia: "left" },
+                    { sigla: "MDB", nome: "Movimento Democrático Brasileiro", ideologia: "center" },
+                    { sigla: "PSDB", nome: "Partido da Social Democracia Brasileira", ideologia: "center" },
+                    { sigla: "PL", nome: "Partido Liberal", ideologia: "right" },
+                    { sigla: "PSD", nome: "Partido Social Democrático", ideologia: "right" }
+                ];
+                
+                const BRAZILIAN_STATES = ["SP", "RJ", "MG", "RS", "PR", "BA", "SC", "GO", "PE", "CE"];
+                
+                const firstName = BRAZILIAN_NAMES.firstNames[Math.floor(Math.random() * BRAZILIAN_NAMES.firstNames.length)];
+                const lastName = BRAZILIAN_NAMES.lastNames[Math.floor(Math.random() * BRAZILIAN_NAMES.lastNames.length)];
+                const party = BRAZILIAN_PARTIES[Math.floor(Math.random() * BRAZILIAN_PARTIES.length)];
+                const state = BRAZILIAN_STATES[Math.floor(Math.random() * BRAZILIAN_STATES.length)];
+                
+                const position = scope === 'federal' ? 
+                    (Math.random() > 0.2 ? 'Deputado Federal' : 'Senador') :
+                    (Math.random() > 0.3 ? 'Deputado Estadual' : 'Governador');
+                
+                const baseExpense = position === 'Senador' ? 1800000 : 
+                                   position === 'Governador' ? 2500000 : 
+                                   position === 'Deputado Federal' ? 1200000 : 800000;
+                
+                const expenses = Array.from({length: 3}, (_, i) => ({
+                    year: 2023 + i,
+                    amount: baseExpense * (0.8 + Math.random() * 0.4),
+                    description: "Cota Parlamentar"
+                }));
+                
+                return {
+                    id: id,
+                    name: `${firstName} ${lastName}`,
+                    party: party.sigla,
+                    partyName: party.nome,
+                    ideology: party.ideologia,
+                    state: state,
+                    image: `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%232c3e50'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='white'>${firstName.charAt(0)}${lastName.charAt(0)}</text></svg>`,
+                    expenses: expenses,
                     position: position,
-                    location: state,
-                    startDate: `${startYear}-01-01`,
-                    endDate: `${startYear + 3}-12-31`,
-                    status: 'Concluído'
-                });
-            });
-            
-            return career.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-        }
-
-        function generateVotes() {
-            const proposals = [
-                "Reforma Tributária 2023",
-                "PEC dos Precatórios",
-                "Marco Legal do Saneamento",
-                "Orçamento Federal 2024",
-                "Lei de Diretrizes Orçamentárias 2024",
-                "Reforma Administrativa",
-                "Marco Civil da Internet",
-                "Lei de Liberdade Econômica"
-            ];
-            
-            const votes = ['A Favor', 'Contra', 'Abstenção'];
-            
-            return proposals.map(proposal => ({
-                proposal: proposal,
-                vote: votes[Math.floor(Math.random() * votes.length)],
-                date: new Date(2023 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0]
-            })).sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
-
-        // ===== SISTEMA DE RENDERIZAÇÃO =====
-        function renderPoliticians(scope) {
-            const politicians = POLITICIANS_DATABASE[scope];
-            
-            if (politicians.length === 0) {
-                document.getElementById(`${scope}Politicians`).innerHTML = '<div class="no-data">Nenhum político encontrado</div>';
-                return;
+                    scope: scope
+                };
             }
             
-            // Aplicar filtros usando Web Worker se disponível
-            const filters = getCurrentFilters();
-            
-            if (DataProcessorWorker) {
-                DataProcessorWorker.postMessage({
-                    type: 'FILTER_POLITICIANS',
-                    data: { politicians, filters }
-                });
-            } else {
-                const filteredPoliticians = filterPoliticians(politicians);
-                renderPoliticiansView(scope, filteredPoliticians);
-            }
-        }
-
-        function renderPoliticiansView(scope, politicians) {
-            const gridContainer = document.getElementById(`${scope}Politicians`);
-            const listContainer = document.getElementById(`${scope}PoliticiansList`);
-            
-            gridContainer.innerHTML = '';
-            listContainer.innerHTML = '';
-            
-            if (politicians.length === 0) {
-                gridContainer.innerHTML = '<div class="no-data">Nenhum político encontrado com os filtros aplicados</div>';
-                listContainer.innerHTML = '<div class="no-data">Nenhum político encontrado com os filtros aplicados</div>';
-                return;
-            }
-            
-            // Renderizar apenas os primeiros 20 itens inicialmente (lazy loading)
-            const initialPoliticians = politicians.slice(0, 20);
-            
-            initialPoliticians.forEach(politician => {
-                const card = createPoliticianCard(politician);
-                const listItem = createPoliticianListItem(politician);
+            // ===== SISTEMA DE RENDERIZAÇÃO =====
+            renderPoliticians(scope) {
+                const politicians = this.politiciansData[scope];
+                const gridContainer = document.getElementById(`${scope}Politicians`);
+                const listContainer = document.getElementById(`${scope}PoliticiansList`);
                 
-                gridContainer.appendChild(card);
-                listContainer.appendChild(listItem);
-            });
-            
-            // Configurar lazy loading para o restante
-            if (politicians.length > 20) {
-                setupLazyLoading(scope, politicians.slice(20), gridContainer, listContainer);
+                if (!politicians || politicians.length === 0) {
+                    gridContainer.innerHTML = '<div class="no-data">Nenhum político encontrado</div>';
+                    return;
+                }
+                
+                // Aplicar filtros
+                const filteredPoliticians = this.filterPoliticians(politicians);
+                
+                if (filteredPoliticians.length === 0) {
+                    const noDataHTML = '<div class="no-data">Nenhum político encontrado com os filtros aplicados</div>';
+                    gridContainer.innerHTML = noDataHTML;
+                    listContainer.innerHTML = noDataHTML;
+                    return;
+                }
+                
+                // Renderizar visualização atual
+                if (this.currentView === 'grid') {
+                    this.renderGridView(scope, filteredPoliticians);
+                } else {
+                    this.renderListView(scope, filteredPoliticians);
+                }
+                
+                this.updateStats();
             }
             
-            updateStats();
-        }
-
-        function setupLazyLoading(scope, remainingPoliticians, gridContainer, listContainer) {
-            let loadedCount = 20;
-            const loadMore = () => {
-                const nextBatch = remainingPoliticians.slice(0, 10);
-                remainingPoliticians = remainingPoliticians.slice(10);
-                loadedCount += nextBatch.length;
+            renderGridView(scope, politicians) {
+                const gridContainer = document.getElementById(`${scope}Politicians`);
+                const listContainer = document.getElementById(`${scope}PoliticiansList`);
                 
-                nextBatch.forEach(politician => {
-                    const card = createPoliticianCard(politician);
-                    const listItem = createPoliticianListItem(politician);
+                gridContainer.style.display = 'grid';
+                listContainer.style.display = 'none';
+                
+                // Limpar containers
+                gridContainer.innerHTML = '';
+                listContainer.innerHTML = '';
+                
+                // Renderizar cards
+                politicians.forEach(politician => {
+                    const card = this.createPoliticianCard(politician);
+                    const listItem = this.createPoliticianListItem(politician);
                     
                     gridContainer.appendChild(card);
                     listContainer.appendChild(listItem);
                 });
+            }
+            
+            renderListView(scope, politicians) {
+                const gridContainer = document.getElementById(`${scope}Politicians`);
+                const listContainer = document.getElementById(`${scope}PoliticiansList`);
                 
-                if (remainingPoliticians.length === 0) {
-                    window.removeEventListener('scroll', scrollHandler);
-                }
-            };
+                gridContainer.style.display = 'none';
+                listContainer.style.display = 'flex';
+                
+                // Limpar containers
+                gridContainer.innerHTML = '';
+                listContainer.innerHTML = '';
+                
+                // Renderizar lista
+                politicians.forEach(politician => {
+                    const card = this.createPoliticianCard(politician);
+                    const listItem = this.createPoliticianListItem(politician);
+                    
+                    gridContainer.appendChild(card);
+                    listContainer.appendChild(listItem);
+                });
+            }
             
-            const scrollHandler = () => {
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-                    loadMore();
-                }
-            };
+            createPoliticianCard(politician) {
+                const card = document.createElement('div');
+                card.className = 'politician-card';
+                card.setAttribute('role', 'article');
+                
+                const totalExpenses = politician.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                const formattedExpenses = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(totalExpenses);
+                
+                card.innerHTML = `
+                    <img class="politician-image lazy" data-src="${politician.image}" alt="${politician.name}" loading="lazy">
+                    <div class="politician-info">
+                        <div class="politician-name">${politician.name}</div>
+                        <div class="politician-party politician-${politician.ideology}">
+                            ${politician.party} - ${politician.ideology === 'left' ? 'Esquerda' : politician.ideology === 'center' ? 'Centro' : 'Direita'}
+                        </div>
+                        <div class="politician-details">
+                            <p><strong>Cargo:</strong> ${politician.position}</p>
+                            <p><strong>Estado:</strong> ${politician.state}</p>
+                            <p><strong>Partido:</strong> ${politician.partyName}</p>
+                            <p><strong>Gastos totais:</strong> ${formattedExpenses}</p>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-icon" title="Twitter" aria-label="Twitter de ${politician.name}"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                            <a href="#" class="social-icon" title="Facebook" aria-label="Facebook de ${politician.name}"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                            <a href="#" class="social-icon" title="Instagram" aria-label="Instagram de ${politician.name}"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        </div>
+                        <button class="view-details" onclick="app.showPoliticianDetails(${politician.id}, '${politician.scope}')">
+                            Ver Detalhes Completos
+                        </button>
+                    </div>
+                `;
+                
+                // Configurar lazy loading para a imagem
+                const img = card.querySelector('.politician-image');
+                this.lazyLoader.observe(img);
+                
+                return card;
+            }
             
-            window.addEventListener('scroll', scrollHandler);
-        }
-
-        function createPoliticianCard(politician) {
-            const card = document.createElement('div');
-            card.className = 'politician-card';
-            
-            const totalExpenses = politician.expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const formattedExpenses = new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(totalExpenses);
-            
-            card.innerHTML = `
-                <div class="politician-image lazy" data-src="${politician.image}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-                <div class="politician-info">
-                    <div class="politician-name">${politician.name}</div>
-                    <div class="politician-party politician-${politician.ideology}">${politician.party} - ${politician.ideology === 'left' ? 'Esquerda' : politician.ideology === 'center' ? 'Centro' : 'Direita'}</div>
-                    <div class="politician-details">
-                        <p><strong>Cargo:</strong> ${politician.position}</p>
-                        <p><strong>Estado:</strong> ${politician.state}</p>
-                        <p><strong>Partido:</strong> ${politician.partyName}</p>
-                        <p><strong>Gastos totais:</strong> ${formattedExpenses}</p>
+            createPoliticianListItem(politician) {
+                const item = document.createElement('div');
+                item.className = 'politician-list-item';
+                item.setAttribute('role', 'article');
+                
+                const totalExpenses = politician.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                const formattedExpenses = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(totalExpenses);
+                
+                item.innerHTML = `
+                    <img class="list-image lazy" data-src="${politician.image}" alt="${politician.name}" loading="lazy">
+                    <div class="list-info">
+                        <div class="politician-name">${politician.name}</div>
+                        <div class="politician-party politician-${politician.ideology}">
+                            ${politician.party} - ${politician.ideology === 'left' ? 'Esquerda' : politician.ideology === 'center' ? 'Centro' : 'Direita'}
+                        </div>
+                        <div class="politician-details">
+                            <p><strong>Cargo:</strong> ${politician.position} | <strong>Estado:</strong> ${politician.state} | <strong>Gastos:</strong> ${formattedExpenses}</p>
+                        </div>
                     </div>
                     <div class="social-links">
-                        <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon" title="Twitter" aria-label="Twitter de ${politician.name}"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                        <a href="#" class="social-icon" title="Facebook" aria-label="Facebook de ${politician.name}"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" class="social-icon" title="Instagram" aria-label="Instagram de ${politician.name}"><i class="fab fa-instagram" aria-hidden="true"></i></a>
                     </div>
-                    <button class="view-details" onclick="showPoliticianDetails(${politician.id}, '${politician.scope}')">
-                        Ver Detalhes Completos
+                    <button class="view-details" onclick="app.showPoliticianDetails(${politician.id}, '${politician.scope}')">
+                        Detalhes
                     </button>
-                </div>
-            `;
+                `;
+                
+                // Configurar lazy loading para a imagem
+                const img = item.querySelector('.list-image');
+                this.lazyLoader.observe(img);
+                
+                return item;
+            }
             
-            // Configurar lazy loading para a imagem
-            const img = card.querySelector('.politician-image');
-            LazyLoader.observe(img);
+            // ===== FILTROS E PESQUISA =====
+            setupFilters() {
+                const BRAZILIAN_STATES = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
+                const BRAZILIAN_PARTIES = [
+                    { sigla: "PT", nome: "Partido dos Trabalhadores" },
+                    { sigla: "PSOL", nome: "Partido Socialismo e Liberdade" },
+                    { sigla: "MDB", nome: "Movimento Democrático Brasileiro" },
+                    { sigla: "PSDB", nome: "Partido da Social Democracia Brasileira" },
+                    { sigla: "PL", nome: "Partido Liberal" },
+                    { sigla: "PSD", nome: "Partido Social Democrático" }
+                ];
+                
+                // Preencher estados
+                const stateFilter = document.getElementById('stateFilter');
+                BRAZILIAN_STATES.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateFilter.appendChild(option);
+                });
+                
+                // Preencher partidos
+                const partyFilter = document.getElementById('partyFilter');
+                BRAZILIAN_PARTIES.forEach(party => {
+                    const option = document.createElement('option');
+                    option.value = party.sigla;
+                    option.textContent = `${party.sigla} - ${party.nome}`;
+                    partyFilter.appendChild(option);
+                });
+                
+                // Configurar eventos com debouncing
+                const filterElements = ['ideologyFilter', 'stateFilter', 'partyFilter', 'searchFilter'];
+                filterElements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('change', () => {
+                            this.debouncer.debounce('filters', () => this.applyFilters());
+                        });
+                        
+                        if (id === 'searchFilter') {
+                            element.addEventListener('input', () => {
+                                this.debouncer.debounce('search', () => this.applyFilters(), 500);
+                            });
+                        }
+                    }
+                });
+            }
             
-            return card;
+            getCurrentFilters() {
+                return {
+                    ideology: document.getElementById('ideologyFilter').value,
+                    state: document.getElementById('stateFilter').value,
+                    party: document.getElementById('partyFilter').value,
+                    search: document.getElementById('searchFilter').value.toLowerCase()
+                };
+            }
+            
+            applyFilters() {
+                this.renderPoliticians(this.currentTab);
+            }
+            
+            filterPoliticians(politicians) {
+                const filters = this.getCurrentFilters();
+                
+                return politicians.filter(politician => {
+                    if (filters.ideology !== 'all' && politician.ideology !== filters.ideology) return false;
+                    if (filters.state !== 'all' && politician.state !== filters.state) return false;
+                    if (filters.party !== 'all' && politician.party !== filters.party) return false;
+                    if (filters.search && !politician.name.toLowerCase().includes(filters.search)) return false;
+                    return true;
+                });
+            }
+            
+            // ===== ATUALIZAÇÃO DE ESTATÍSTICAS =====
+            updateStats() {
+                const allPoliticians = [...this.politiciansData.federal, ...this.politiciansData.state];
+                
+                document.getElementById('totalPoliticians').textContent = allPoliticians.length;
+                document.getElementById('leftCount').textContent = allPoliticians.filter(p => p.ideology === 'left').length;
+                document.getElementById('centerCount').textContent = allPoliticians.filter(p => p.ideology === 'center').length;
+                document.getElementById('rightCount').textContent = allPoliticians.filter(p => p.ideology === 'right').length;
+            }
+            
+            // ===== SISTEMA DE DETALHES =====
+            showPoliticianDetails(id, scope) {
+                const politician = this.politiciansData[scope].find(p => p.id === id);
+                if (!politician) return;
+                
+                // Em uma implementação real, aqui viria um modal com todos os detalhes
+                const totalExpenses = politician.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                const formattedExpenses = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(totalExpenses);
+                
+                alert(`Detalhes de ${politician.name}\nPartido: ${politician.party}\nCargo: ${politician.position}\nEstado: ${politician.state}\nGastos Totais: ${formattedExpenses}`);
+            }
+            
+            // ===== SISTEMA DE ABAS =====
+            setupTabs() {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetTab = tab.dataset.tab;
+                        this.switchTab(targetTab);
+                    });
+                });
+            }
+            
+            switchTab(tabName) {
+                // Atualizar tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                
+                document.querySelectorAll('.tab-content').forEach(c => {
+                    c.classList.remove('active');
+                    c.setAttribute('hidden', 'true');
+                });
+                
+                const activeTab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+                const activeContent = document.getElementById(`${tabName}Content`);
+                
+                if (activeTab && activeContent) {
+                    activeTab.classList.add('active');
+                    activeTab.setAttribute('aria-selected', 'true');
+                    activeContent.classList.add('active');
+                    activeContent.removeAttribute('hidden');
+                    
+                    this.currentTab = tabName;
+                    this.renderPoliticians(tabName);
+                }
+            }
+            
+            // ===== CONTROLES DE VISUALIZAÇÃO =====
+            setupViewControls() {
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const viewType = btn.dataset.view;
+                        this.switchView(viewType, btn.closest('.tab-content'));
+                    });
+                });
+            }
+            
+            switchView(viewType, tabContent) {
+                // Ativar botão
+                tabContent.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                const activeBtn = tabContent.querySelector(`.view-btn[data-view="${viewType}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+                
+                this.currentView = viewType;
+                this.renderPoliticians(this.currentTab);
+            }
+            
+            // ===== SISTEMA DE TEMA =====
+            setupTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                this.updateThemeIcon(themeToggle, currentTheme);
+                
+                themeToggle.addEventListener('click', () => {
+                    const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    this.updateThemeIcon(themeToggle, newTheme);
+                });
+            }
+            
+            updateThemeIcon(button, theme) {
+                const icon = button.querySelector('span');
+                if (icon) {
+                    icon.textContent = theme === 'light' ? '🌙' : '☀️';
+                }
+                button.setAttribute('aria-label', `Alternar para tema ${theme === 'light' ? 'escuro' : 'claro'}`);
+            }
+            
+            // ===== SISTEMA DE IMPOSTOS =====
+            initializeRevenuePanel() {
+                this.updateRevenueData();
+                setInterval(() => this.updateRevenueData(), 30000);
+                
+                this.setupRevenueChart();
+                
+                document.getElementById('revenueUpdateBtn').addEventListener('click', () => {
+                    this.updateRevenueData();
+                });
+            }
+            
+            updateRevenueData() {
+                const now = new Date();
+                document.getElementById('revenueLastUpdate').textContent = 
+                    `Última atualização: ${now.toLocaleTimeString('pt-BR')}`;
+                
+                // Simular pequenas variações nos dados
+                const revenueChange = (Math.random() * 0.5 + 4.5).toFixed(1);
+                const spendingChange = (Math.random() * 0.5 + 4.8).toFixed(1);
+                
+                document.getElementById('revenueChange').innerHTML = 
+                    `<i class="fas fa-arrow-up" aria-hidden="true"></i> +${revenueChange}% vs 2024`;
+                document.getElementById('spendingChange').innerHTML = 
+                    `<i class="fas fa-arrow-up" aria-hidden="true"></i> +${spendingChange}% vs 2024`;
+            }
+            
+            setupRevenueChart() {
+                const ctx = document.getElementById('revenueChart');
+                if (!ctx) return;
+                
+                // Destruir gráfico existente se houver
+                if (ctx.chart) {
+                    ctx.chart.destroy();
+                }
+                
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                        datasets: [
+                            {
+                                label: 'Arrecadação',
+                                data: [22, 25, 28, 30, 32, 35, 38, 40, 42, 45, 48, 50],
+                                borderColor: '#27ae60',
+                                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Gastos',
+                                data: [20, 23, 26, 28, 31, 34, 37, 39, 42, 45, 48, 52],
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: 'white',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                },
+                                ticks: {
+                                    color: 'white',
+                                    callback: function(value) {
+                                        return 'R$ ' + value + 'Bi';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // ===== EVENT LISTENERS =====
+            setupEventListeners() {
+                this.setupTheme();
+                
+                // Prevenir envio de formulários
+                document.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                });
+                
+                // Melhorar acessibilidade do teclado
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        // Fechar modais ou menus abertos
+                        const openModals = document.querySelectorAll('[aria-modal="true"]');
+                        openModals.forEach(modal => {
+                            modal.style.display = 'none';
+                            modal.setAttribute('aria-hidden', 'true');
+                        });
+                    }
+                });
+            }
+            
+            // ===== DESTRUIÇÃO =====
+            destroy() {
+                this.lazyLoader.disconnect();
+                this.debouncer.cancel('filters');
+                this.debouncer.cancel('search');
+                
+                // Destruir gráficos
+                const chart = document.getElementById('revenueChart');
+                if (chart && chart.chart) {
+                    chart.chart.destroy();
+                }
+            }
         }
 
-        function createPoliticianListItem(politician) {
-            const item = document.createElement('div');
-            item.className = 'politician-list-item';
-            
-            const totalExpenses = politician.expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const formattedExpenses = new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(totalExpenses);
-            
-            item.innerHTML = `
-                <div class="list-image lazy" data-src="${politician.image}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-                <div class="list-info">
-                    <div class="politician-name">${politician.name}</div>
-                    <div class="politician-party politician-${politician.ideology}">${politician.party} - ${politician.ideology === 'left' ? 'Esquerda' : politician.ideology === 'center' ? 'Centro' : 'Direita'}</div>
-                    <div class="politician-details">
-                        <p><strong>Cargo:</strong> ${politician.position} | <strong>Estado:</strong> ${politician.state} | <strong>Gastos:</strong> ${formattedExpenses}</p>
-                    </div>
-                </div>
-                <div class="social-links">
-                    <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
-                </div>
-                <button class="view-details" onclick="showPoliticianDetails(${politician.id}, '${politician.scope}')">
-                    Detalhes
-                </button>
-            `;
-            
-            // Configurar lazy loading para a imagem
-            const img = item.querySelector('.list-image');
-            LazyLoader.observe(img);
-            
-            return item;
-        }
+        // ===== INICIALIZAÇÃO DA APLICAÇÃO =====
+        let app;
 
-        // ===== FILTROS E PESQUISA =====
-        function setupFilters() {
-            // Preencher estados
-            const stateFilter = document.getElementById('stateFilter');
-            BRAZILIAN_STATES.forEach(state => {
-                const option = document.createElement('option');
-                option.value = state;
-                option.textContent = state;
-                stateFilter.appendChild(option);
-            });
-            
-            // Preencher partidos
-            const partyFilter = document.getElementById('partyFilter');
-            BRAZILIAN_PARTIES.forEach(party => {
-                const option = document.createElement('option');
-                option.value = party.sigla;
-                option.textContent = `${party.sigla} - ${party.nome}`;
-                partyFilter.appendChild(option);
-            });
-            
-            // Configurar eventos com debouncing
-            document.getElementById('ideologyFilter').addEventListener('change', () => {
-                Debouncer.debounce('filters', applyFilters);
-            });
-            document.getElementById('stateFilter').addEventListener('change', () => {
-                Debouncer.debounce('filters', applyFilters);
-            });
-            document.getElementById('partyFilter').addEventListener('change', () => {
-                Debouncer.debounce('filters', applyFilters);
-            });
-            document.getElementById('searchFilter').addEventListener('input', () => {
-                Debouncer.debounce('search', applyFilters, 500);
-            });
-        }
-
-        function getCurrentFilters() {
-            return {
-                ideology: document.getElementById('ideologyFilter').value,
-                state: document.getElementById('stateFilter').value,
-                party: document.getElementById('partyFilter').value,
-                search: document.getElementById('searchFilter').value.toLowerCase()
-            };
-        }
-
-        function applyFilters() {
-            const activeTab = document.querySelector('.tab.active').dataset.tab;
-            renderPoliticians(activeTab);
-        }
-
-        function filterPoliticians(politicians) {
-            const filters = getCurrentFilters();
-            
-            return politicians.filter(politician => {
-                if (filters.ideology !== 'all' && politician.ideology !== filters.ideology) return false;
-                if (filters.state !== 'all' && politician.state !== filters.state) return false;
-                if (filters.party !== 'all' && politician.party !== filters.party) return false;
-                if (filters.search && !politician.name.toLowerCase().includes(filters.search)) return false;
-                return true;
-            });
-        }
-
-        // ===== ATUALIZAÇÃO DE ESTATÍSTICAS =====
-        function updateStats() {
-            const allPoliticians = [...POLITICIANS_DATABASE.federal, ...POLITICIANS_DATABASE.state];
-            
-            document.getElementById('totalPoliticians').textContent = allPoliticians.length;
-            document.getElementById('leftCount').textContent = allPoliticians.filter(p => p.ideology === 'left').length;
-            document.getElementById('centerCount').textContent = allPoliticians.filter(p => p.ideology === 'center').length;
-            document.getElementById('rightCount').textContent = allPoliticians.filter(p => p.ideology === 'right').length;
-        }
-
-        // ===== SISTEMA DE DETALHES =====
-        function showPoliticianDetails(id, scope) {
-            const politician = POLITICIANS_DATABASE[scope].find(p => p.id === id);
-            if (!politician) return;
-            
-            alert(`Detalhes de ${politician.name}\nPartido: ${politician.party}\nCargo: ${politician.position}\nEstado: ${politician.state}`);
-            // Em uma implementação real, aqui viria um modal com todos os detalhes
-        }
-
-        // ===== INICIALIZAÇÃO =====
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Iniciando Transparência Brasil 2025...');
-            
-            // 1. Inicializar sistemas de otimização
-            LazyLoader.init();
-            
-            // 2. Painel de impostos
-            initializeRevenuePanel();
-            
-            // 3. Base de dados de políticos
-            generatePoliticiansData();
-            setupFilters();
-            
-            // 4. Configurações essenciais
-            setupTheme();
-            setupTabs();
-            setupViewControls();
-            
-            console.log('✅ Sistema 2025 carregado com sucesso!');
+            app = new TransparenciaBrasilApp();
         });
 
-        // ===== SISTEMA DE ABAS =====
-        function setupTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    this.classList.add('active');
-                    document.getElementById(this.dataset.tab + 'Content').classList.add('active');
-                    
-                    // Renderizar conteúdo da aba
-                    renderPoliticians(this.dataset.tab);
-                });
-            });
-        }
-
-        // ===== CONTROLES DE VISUALIZAÇÃO =====
-        function setupViewControls() {
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const viewType = this.dataset.view;
-                    const tabContent = this.closest('.tab-content');
-                    const gridView = tabContent.querySelector('.politicians-grid');
-                    const listView = tabContent.querySelector('.politicians-list');
-                    
-                    // Ativar botão
-                    tabContent.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Mostrar visualização
-                    if (viewType === 'grid') {
-                        gridView.style.display = 'grid';
-                        listView.style.display = 'none';
-                    } else {
-                        gridView.style.display = 'none';
-                        listView.style.display = 'flex';
-                    }
-                });
-            });
-        }
-
-        // ===== SISTEMA DE TEMA =====
-        function setupTheme() {
-            const themeToggle = document.getElementById('themeToggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-            
-            themeToggle.addEventListener('click', () => {
-                const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
-            });
-        }
-
-        // ===== SISTEMA DE IMPOSTOS =====
-        function initializeRevenuePanel() {
-            // Simular dados fiscais em tempo real
-            updateRevenueData();
-            setInterval(updateRevenueData, 30000); // Atualizar a cada 30 segundos
-            
-            // Configurar gráfico
-            setupRevenueChart();
-            
-            // Configurar botão de atualização
-            document.getElementById('revenueUpdateBtn').addEventListener('click', updateRevenueData);
-        }
-
-        function updateRevenueData() {
-            const now = new Date();
-            document.getElementById('revenueLastUpdate').textContent = 
-                `Última atualização: ${now.toLocaleTimeString('pt-BR')}`;
-            
-            // Simular pequenas variações nos dados
-            const revenueChange = (Math.random() * 0.5 + 4.5).toFixed(1);
-            const spendingChange = (Math.random() * 0.5 + 4.8).toFixed(1);
-            
-            document.getElementById('revenueChange').innerHTML = 
-                `<i class="fas fa-arrow-up"></i> +${revenueChange}% vs 2024`;
-            document.getElementById('spendingChange').innerHTML = 
-                `<i class="fas fa-arrow-up"></i> +${spendingChange}% vs 2024`;
-        }
-
-        function setupRevenueChart() {
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                    datasets: [
-                        {
-                            label: 'Arrecadação',
-                            data: [22, 25, 28, 30, 32, 35, 38, 40, 42, 45, 48, 50],
-                            borderColor: '#27ae60',
-                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Gastos',
-                            data: [20, 23, 26, 28, 31, 34, 37, 39, 42, 45, 48, 52],
-                            borderColor: '#e74c3c',
-                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: 'white',
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.1)'
-                            },
-                            ticks: {
-                                color: 'white'
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.1)'
-                            },
-                            ticks: {
-                                color: 'white',
-                                callback: function(value) {
-                                    return 'R$ ' + value + 'Bi';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+        // Limpeza quando a página for descarregada
+        window.addEventListener('beforeunload', function() {
+            if (app) {
+                app.destroy();
+            }
+        });
     </script>
 </body>
 </html>
